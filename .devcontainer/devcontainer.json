@@ -23,6 +23,7 @@
                 "redhat.vscode-yaml",
                 "yzhang.markdown-all-in-one",
                 "DavidAnson.vscode-markdownlint",
+                "streetsidesoftware.code-spell-checker",
                 "ms-azuretools.vscode-docker"
             ]
         }

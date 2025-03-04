@@ -1,18 +1,24 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
+    "$schema": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json",
+
 	"name": "Node.js & TypeScript",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+    // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+    // https://github.com/devcontainers/images/tree/main/src/typescript-node
 	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
 
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+    // Features to add to the dev container. More info: https://containers.dev/features.
+    "features": {
+      // https://github.com/devcontainers/features/tree/main/src/docker-in-docker
+      "ghcr.io/devcontainers/features/docker-in-docker:latest": {}
+    },
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "yarn install",
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "npm install --global @nestjs/cli",
 
 	// Configure tool-specific properties.
     "customizations": {
@@ -24,7 +30,11 @@
                 "yzhang.markdown-all-in-one",
                 "DavidAnson.vscode-markdownlint",
                 "streetsidesoftware.code-spell-checker",
-                "ms-azuretools.vscode-docker"
+                "ms-azuretools.vscode-docker",
+                "GitHub.copilot",
+                "GitHub.copilot-chat",
+                "Prisma.prisma",
+                "dotenv.dotenv-vscode"
             ]
         }
     }

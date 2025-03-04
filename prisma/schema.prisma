@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(cuid(2))
+
+  username String  @unique
+  avatar   String?
+
+  writtenChronicles Chronicle[] @relation("Author")
+  ratedChronicles   Chronicle[] @relation("Raters")
+
+  @@map("users")
+}
+
+model Director {
+  id Int @id @default(autoincrement())
+
+  name String  @unique
+  link String?
+
+  chronicles Chronicle[]
+
+  @@map("directors")
+}
+
+model Genre {
+  id Int @id @default(autoincrement())
+
+  title String @unique
+  link  String @unique
+
+  subCategoryIds SubCategory[]
+  Chronicles     Chronicle[]
+
+  @@map("genres")
+}
+
+model SubCategory {
+  id Int @id @default(autoincrement())
+
+  title   String @unique
+  link    String @unique
+  Genre   Genre  @relation(fields: [genreId], references: [id])
+  genreId Int
+
+  Chronicles Chronicle[]
+
+  @@map("subCategories")
+}
+
+model Chronicle {
+  id        Int      @id @default(autoincrement())
+  addedAt   DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  link       String @unique
+  createYear Int
+
+  author   User   @relation("Author", fields: [authorId], references: [id])
+  authorId String
+  raters   User[] @relation("Raters")
+
+  genre         Genre       @relation(fields: [genreId], references: [id])
+  genreId       Int
+  subCategory   SubCategory @relation(fields: [subCategoryId], references: [id])
+  subCategoryId Int
+
+  mainTitle         String     @unique
+  originalTitle     String?
+  alternativeTitles String[]
+  directors         Director[]
+  releaseYear       Int
+  originCountry     String[]
+  runtime           Int?
+
+  tmdbId Int?
+
+  @@map("chronicles")
+}

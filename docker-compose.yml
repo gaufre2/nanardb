@@ -1,0 +1,13 @@
+
+services:
+  # https://hub.docker.com/_/postgres/
+  dev-db:
+    container_name: dev-postgres
+    image: postgres:17
+    shm_size: 128mb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: prisma
+      POSTGRES_USER: prisma
+      POSTGRES_Db: dev

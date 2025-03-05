@@ -2,7 +2,7 @@
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
     "username" TEXT NOT NULL,
-    "avatar" TEXT,
+    "avatar" BYTEA,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -41,14 +41,14 @@ CREATE TABLE "chronicles" (
     "addedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "link" TEXT NOT NULL,
-    "createYear" INTEGER NOT NULL,
+    "createYear" INTEGER,
     "authorId" TEXT NOT NULL,
     "genreId" INTEGER NOT NULL,
     "subCategoryId" INTEGER NOT NULL,
     "mainTitle" TEXT NOT NULL,
     "originalTitle" TEXT,
     "alternativeTitles" TEXT[],
-    "releaseYear" INTEGER NOT NULL,
+    "releaseYear" INTEGER,
     "originCountry" TEXT[],
     "runtime" INTEGER,
     "tmdbId" INTEGER,

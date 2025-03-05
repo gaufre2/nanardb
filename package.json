@@ -6,6 +6,9 @@
   "private": false,
   "license": "MIT",
   "scripts": {
+    "db:dev:rm": "docker compose rm dev-db -s -f -v",
+    "db:dev:up": "docker compose up dev-db -d",
+    "db:dev:restart": "pnpm db:dev:rm && pnpm db:dev:up && sleep 1 && pnpm prisma:dev:deploy",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "prisma:dev:deploy": "prisma migrate deploy",
@@ -22,12 +25,21 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@apollo/server": "^4.11.3",
+    "@nestjs/apollo": "^13.0.3",
     "@nestjs/common": "^11.0.11",
+    "@nestjs/config": "^4.0.1",
     "@nestjs/core": "^11.0.11",
+    "@nestjs/graphql": "^13.0.3",
     "@nestjs/platform-express": "^11.0.11",
     "@prisma/client": "6.4.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "graphql": "^16.10.0",
+    "puppeteer": "^24.3.1",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.2"
+    "rxjs": "^7.8.2",
+    "save": "^2.9.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
@@ -77,5 +89,10 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@nestjs/core"
+    ]
   }
 }

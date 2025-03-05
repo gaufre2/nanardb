@@ -18,7 +18,7 @@
 	// "forwardPorts": [],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "npm install --global @nestjs/cli",
+  "postCreateCommand": "/bin/bash ./.devcontainer/postCreateCommand.sh",
 
 	// Configure tool-specific properties.
     "customizations": {
@@ -34,7 +34,9 @@
                 "GitHub.copilot",
                 "GitHub.copilot-chat",
                 "Prisma.prisma",
-                "dotenv.dotenv-vscode"
+                "dotenv.dotenv-vscode",
+                "Gruntfuggly.todo-tree",
+                "GraphQL.vscode-graphql-syntax"
             ]
         }
     }

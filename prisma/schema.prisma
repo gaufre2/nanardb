@@ -16,7 +16,7 @@ datasource db {
 model User {
   id String @id @default(cuid(2))
 
-  username String  @unique
+  username String @unique
   avatar   Bytes?
 
   writtenChronicles Chronicle[] @relation("Author")
@@ -42,13 +42,13 @@ model Genre {
   title String @unique
   link  String @unique
 
-  subCategoryIds SubCategory[]
-  Chronicles     Chronicle[]
+  subGenreIds SubGenre[]
+  Chronicles  Chronicle[]
 
   @@map("genres")
 }
 
-model SubCategory {
+model SubGenre {
   id Int @id @default(autoincrement())
 
   title   String @unique
@@ -58,7 +58,17 @@ model SubCategory {
 
   Chronicles Chronicle[]
 
-  @@map("subCategories")
+  @@map("subGenres")
+}
+
+enum RarityRating {
+  COMMON
+  FINDABLE
+  RARE
+  EXOTIC
+  COLLECTORS_ITEM
+  UNFINDABLE
+  NEVER_RELEASED
 }
 
 model Chronicle {
@@ -73,18 +83,24 @@ model Chronicle {
   authorId String
   raters   User[] @relation("Raters")
 
-  genre         Genre       @relation(fields: [genreId], references: [id])
-  genreId       Int
-  subCategory   SubCategory @relation(fields: [subCategoryId], references: [id])
-  subCategoryId Int
+  genre      Genre    @relation(fields: [genreId], references: [id])
+  genreId    Int
+  subGenre   SubGenre @relation(fields: [subGenreId], references: [id])
+  subGenreId Int
 
   mainTitle         String     @unique
   originalTitle     String?
   alternativeTitles String[]
   directors         Director[]
   releaseYear       Int?
-  originCountry     String[]
+  originCountries   String[]
   runtime           Int?
+
+  poster     Bytes?
+  posterFile String?
+
+  averageRating Decimal
+  rarityRating  RarityRating?
 
   tmdbId Int?
 

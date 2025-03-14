@@ -8,8 +8,6 @@ import { RarityRanting } from 'src/common/dto';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { ChronicleDto } from './dto';
 
-const NANARLAND_URL = 'https://www.nanarland.com';
-
 @Injectable()
 /**
  * The `NanarlandService` class provides methods to scrape and retrieve information from the Nanarland website.
@@ -28,6 +26,7 @@ export class NanarlandService {
   private readonly logger = new Logger(NanarlandService.name, {
     timestamp: true,
   });
+  private BASE_URL = 'https://www.nanarland.com';
 
   /**
    * Retrieves text information from infos paragraphs on chronicle page.
@@ -447,7 +446,7 @@ export class NanarlandService {
     const browser = await this.puppeteerService.getBrowser();
     const page = await browser.newPage();
 
-    await page.goto(`${NANARLAND_URL}/chroniques/toutes-nos-chroniques.html`);
+    await page.goto(`${this.BASE_URL}/chroniques/toutes-nos-chroniques.html`);
 
     const hrefs = await this.getChroniclesList(page);
 
@@ -471,7 +470,7 @@ export class NanarlandService {
     const page = await browser.newPage();
 
     const chronicle = {} as ChronicleDto;
-    chronicle.link = `${NANARLAND_URL}${href}`;
+    chronicle.link = `${this.BASE_URL}${href}`;
 
     await page.goto(chronicle.link);
 

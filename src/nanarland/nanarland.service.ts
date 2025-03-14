@@ -11,6 +11,18 @@ import { ChronicleDto } from './dto';
 const NANARLAND_URL = 'https://www.nanarland.com';
 
 @Injectable()
+/**
+ * The `NanarlandService` class provides methods to scrape and retrieve information from the Nanarland website.
+ * It uses Puppeteer to navigate and extract data from the website's chronicle pages.
+ *
+ * @class
+ * @classdesc This service is responsible for fetching and processing chronicle data from Nanarland.
+ *
+ * @param {PuppeteerService} puppeteerService - The Puppeteer service used for web scraping.
+ *
+ * @method getChroniclesHrefs - Fetches the hrefs of all chronicles from the Nanarland URL.
+ * @method getChronicleData - Retrieves the chronicle details from the given href.
+ */
 export class NanarlandService {
   constructor(private puppeteerService: PuppeteerService) {}
   private readonly logger = new Logger(NanarlandService.name, {
@@ -176,6 +188,13 @@ export class NanarlandService {
   private GENRE_SELECTOR =
     'body > main > div.mainInner > nav > ol > li:nth-child(3) > a';
 
+  /**
+   * Retrieves the genre from the given chronicle page.
+   *
+   * @param {Page} page - The chronicle page object to extract the genre from.
+   * @returns {Promise<string>} A promise that resolves to the genre as a string.
+   * @throws {InternalServerErrorException} If the genre name is not found or an error occurs during extraction.
+   */
   private async getGenre(page: Page): Promise<string> {
     try {
       return await page.$eval(
@@ -189,6 +208,13 @@ export class NanarlandService {
     }
   }
 
+  /**
+   * Retrieves the href attribute of a genre element from the given chronicle page.
+   *
+   * @param {Page} page - The chronicle page object to evaluate.
+   * @returns {Promise<string>} - A promise that resolves to the href attribute of the genre element.
+   * @throws {InternalServerErrorException} - If the href attribute is not found or an error occurs during evaluation.
+   */
   private async getGenreHref(page: Page): Promise<string> {
     try {
       const href = await page.$eval(
@@ -211,10 +237,17 @@ export class NanarlandService {
   private SUBGENRE_SELECTOR =
     'body > main > div.mainInner > nav > ol > li:nth-child(4) > a';
 
+  /**
+   * Retrieves the sub-genre name from the given chronicle page.
+   *
+   * @param {Page} page - The chronicle page object to extract the sub-genre from.
+   * @returns {Promise<string>} A promise that resolves to the sub-genre name.
+   * @throws {InternalServerErrorException} If the sub-genre name is not found or an error occurs.
+   */
   private async getSubGenre(page: Page): Promise<string> {
     try {
       return await page.$eval(
-        this.GENRE_SELECTOR,
+        this.SUBGENRE_SELECTOR,
         (el: HTMLEmbedElement) => el.innerText,
       );
     } catch (error) {
@@ -224,6 +257,13 @@ export class NanarlandService {
     }
   }
 
+  /**
+   * Retrieves the href attribute of a sub-genre element from the chronicle page.
+   *
+   * @param page - The chronicle page object representing the web page to scrape.
+   * @returns A promise that resolves to the href attribute of the sub-genre element.
+   * @throws InternalServerErrorException if the href attribute is not found or an error occurs during the process.
+   */
   private async getSubGenreHref(page: Page): Promise<string> {
     try {
       const href = await page.$eval(
@@ -243,6 +283,13 @@ export class NanarlandService {
     }
   }
 
+  /**
+   * Retrieves the creation year from the specified chronicle page.
+   *
+   * @param page - The chronicle page object to extract the creation year from.
+   * @returns A promise that resolves to the creation year as a number, or undefined if the year could not be determined.
+   * @throws Will log an error message if the publication year is not available on the page.
+   */
   private async getCreationYear(page: Page): Promise<number | undefined> {
     try {
       const createYearText = await page.$eval(
@@ -255,17 +302,36 @@ export class NanarlandService {
     }
   }
 
+  /**
+   * Retrieves the original title from the provided information array.
+   *
+   * @param infos - An array of strings containing various information.
+   * @returns The original title if found, otherwise `undefined`.
+   */
   private getOriginalTitle(infos: string[]): string | undefined {
     const originalTitle = this.getInfoTextByKey('Titre original', infos);
     if (originalTitle) {
       return originalTitle;
     }
   }
+
+  /**
+   * Retrieves the list of directors from the provided information array.
+   *
+   * @param infos - An array of strings containing various information.
+   * @returns An array of strings representing the directors.
+   */
   private getDirectors(infos: string[]): string[] {
     const directorsText = this.getInfoTextByKey('Réalisateur(s)', infos);
     return this.splitTextWithSeparator(directorsText);
   }
 
+  /**
+   * Retrieves alternative titles from the provided information array.
+   *
+   * @param infos - An array of strings containing information.
+   * @returns An array of alternative titles if found, otherwise `undefined`.
+   */
   private getAlternativeTitles(infos: string[]): string[] | undefined {
     const alternativeTitlesText = this.getInfoTextByKey(
       'Titre(s) alternatif(s)',
@@ -277,21 +343,46 @@ export class NanarlandService {
     }
   }
 
+  /**
+   * Extracts the release year from an array of information strings.
+   *
+   * @param infos - An array of strings containing various information.
+   * @returns The release year as a number if found, otherwise undefined.
+   */
   private getReleaseYear(infos: string[]): number | undefined {
     const releaseYearText = this.getInfoTextByKey('Année', infos);
     return this.getYearFromText(releaseYearText);
   }
 
+  /**
+   * Retrieves the origin countries from the provided information array.
+   *
+   * @param infos - An array of strings containing various pieces of information.
+   * @returns An array of strings representing the origin countries.
+   */
   private getOriginCountries(infos: string[]): string[] {
     const originCountriesText = this.getInfoTextByKey('Nationalité', infos);
     return this.splitTextWithSeparator(originCountriesText);
   }
 
+  /**
+   * Retrieves the runtime from the provided information array and converts it to minutes.
+   *
+   * @param infos - An array of strings containing various information.
+   * @returns The runtime in minutes.
+   */
   private getRuntime(infos: string[]): number {
     const runtimeText = this.getInfoTextByKey('Durée', infos);
     return this.convertToMinutes(runtimeText);
   }
 
+  /**
+   * Retrieves the poster image URL from the given chronicle page.
+   *
+   * @param {Page} page - The chronicle page object to extract the poster from.
+   * @returns {Promise<string>} - A promise that resolves to the URL of the poster image.
+   * @throws {InternalServerErrorException} - Throws an exception if the poster image is not found or any other error occurs.
+   */
   private async getPoster(page: Page): Promise<string> {
     try {
       return await page.$eval(
@@ -305,6 +396,13 @@ export class NanarlandService {
     }
   }
 
+  /**
+   * Retrieves the average rating from the specified page.
+   *
+   * @param {Page} page - The page object to extract the average rating from.
+   * @returns {Promise<number>} - A promise that resolves to the average rating as a number.
+   * @throws {InternalServerErrorException} - Throws an exception if the average rating element is not found or an error occurs.
+   */
   private async getAverageRating(page: Page): Promise<number> {
     try {
       const averageRating = await page.$eval(
@@ -319,6 +417,13 @@ export class NanarlandService {
     }
   }
 
+  /**
+   * Retrieves the rarity rating from the given chronicle page.
+   *
+   * @param {Page} page - The chronicle page object to extract the rarity rating from.
+   * @returns {Promise<RarityRanting>} A promise that resolves to the rarity rating.
+   * @throws {InternalServerErrorException} If the rarity rating element is not found or an error occurs during extraction.
+   */
   private async getRarityRating(page: Page): Promise<RarityRanting> {
     try {
       const rarityRating = await page.$eval(

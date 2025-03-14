@@ -15,7 +15,7 @@ import { ConfigModule } from '@nestjs/config';
     NanarlandModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      playground: true, //TODO: be sure to disable playground in production context
+      playground: true, // TODO Verify if it disabled in production
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
   ],

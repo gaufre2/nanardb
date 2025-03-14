@@ -3,10 +3,8 @@
 # ------------------------------------------------------
 
 type Query {
-  sayHello: String!
-}
-
-type Mutation {
-  getChroniclesHrefs: [String!]!
-  getChronicleData(href: String!): String!
+  chroniclesHrefs: [String!]!
+  chronicleData(href: String!): String!
+  movieId(query: String!, year: Float): Float!
+  movieData(movieId: Float!, language: String): String!
 }

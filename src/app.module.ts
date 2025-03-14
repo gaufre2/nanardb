@@ -5,6 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
+import { TmdbModule } from './tmdb/tmdb.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ConfigModule } from '@nestjs/config';
       playground: true, // TODO Verify if it disabled in production
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
+    TmdbModule,
   ],
 })
 export class AppModule {}

@@ -6,6 +6,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { TmdbModule } from './tmdb/tmdb.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TmdbModule } from './tmdb/tmdb.module';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
     TmdbModule,
+    RedisModule,
   ],
 })
 export class AppModule {}

@@ -8,10 +8,10 @@ export class NanarlandResolver {
   @Query(() => [String])
   async chroniclesHrefs() {
     return this.nanarlandService.getChroniclesHrefs();
-  }
+  } // TODO remove, only for test
 
   @Query(() => String)
   async chronicleData(@Args('href') href: string) {
-    return this.nanarlandService.getChronicleData(href);
-  }
+    return JSON.stringify(await this.nanarlandService.getChronicleData(href));
+  } // TODO remove, only for test
 }

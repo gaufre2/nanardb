@@ -10,11 +10,15 @@ export class PuppeteerService implements OnApplicationShutdown {
   });
   private browser: puppeteer.Browser;
 
-  async init() {
-    this.logger.log('Launching puppeteer browser...');
-    this.browser = await puppeteer.launch({
-      executablePath: this.config.getOrThrow<string>('CHROMIUM_PATH'),
-    });
+  private async init() {
+    try {
+      this.browser = await puppeteer.launch({
+        executablePath: this.config.getOrThrow<string>('CHROMIUM_PATH'),
+      });
+      this.logger.log('Puppeteer browser started successfully.');
+    } catch (error) {
+      this.logger.error('Failed to start puppeteer browser: ', error);
+    }
   }
 
   async getBrowser() {
@@ -27,10 +31,10 @@ export class PuppeteerService implements OnApplicationShutdown {
   private async cleanup() {
     if (this.browser && this.browser.connected) {
       try {
-        this.logger.log('Closing puppeteer browser...');
         await this.browser.close();
+        this.logger.log('Puppeteer browser closed successfully.');
       } catch (error) {
-        this.logger.error('Error cleaning up browser: ', error);
+        this.logger.error('Failed to close puppeteer browser: ', error);
       }
     }
   }

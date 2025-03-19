@@ -8,12 +8,14 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { MovieDetailsResponseDto, SearchMovieResponseDto } from './dto';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class TmdbService {
   constructor(
     private readonly httpService: HttpService,
     private config: ConfigService,
+    private redisService: RedisService,
   ) {}
   private readonly logger = new Logger(TmdbService.name, {
     timestamp: true,
@@ -24,6 +26,7 @@ export class TmdbService {
     Authorization: `Bearer ${this.TMDB_TOKEN}`,
     Accept: 'application/json',
   };
+  private CACHE_TTL_SEC = 300; // 5 min
 
   private async searchMovie(
     query: string,
@@ -71,6 +74,19 @@ export class TmdbService {
     movieId: number,
     language: string = 'fr-FR',
   ): Promise<MovieDetailsResponseDto> {
+    const cacheClient = this.redisService.getCacheClient();
+    const cacheKey =
+      TmdbService.name.toLowerCase() +
+      ':movie' +
+      `:${movieId}` +
+      `:${language}`;
+
+    const cacheValue = await cacheClient.get(cacheKey);
+    if (cacheValue) {
+      this.logger.verbose('Cached value returned, key: ' + cacheKey);
+      return JSON.parse(cacheValue) as MovieDetailsResponseDto;
+    }
+
     const appendToResponse =
       'alternative_titles,' + 'credits,' + 'keywords,' + 'release_dates';
     const url =
@@ -87,6 +103,12 @@ export class TmdbService {
       );
 
       this.logger.verbose('Movie details answer:', response.data);
+
+      await cacheClient.setex(
+        cacheKey,
+        this.CACHE_TTL_SEC,
+        JSON.stringify(response.data),
+      );
       return response.data as MovieDetailsResponseDto;
     } catch (error) {
       throw new InternalServerErrorException(

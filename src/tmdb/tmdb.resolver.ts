@@ -11,13 +11,15 @@ export class TmdbResolver {
     @Args('year', { nullable: true }) year?: number,
   ) {
     return await this.tmdbService.getMovieId(query, year);
-  }
+  } // TODO remove, only for test
 
   @Query(() => String)
   async movieData(
     @Args('movieId') movieId: number,
     @Args('language', { nullable: true }) language?: string,
   ) {
-    return await this.tmdbService.getMovieData(movieId, language);
-  }
+    return JSON.stringify(
+      await this.tmdbService.getMovieData(movieId, language),
+    );
+  } // TODO remove, only for test
 }

@@ -1,13 +1,17 @@
-
 services:
-  # https://hub.docker.com/_/postgres/
   dev-db:
     container_name: dev-postgres
     image: postgres:17
     shm_size: 128mb
     ports:
-      - "5432:5432"
+      - '5432:5432' # Postgres
     environment:
       POSTGRES_PASSWORD: prisma
       POSTGRES_USER: prisma
       POSTGRES_Db: dev
+  dev-cache:
+    container_name: dev-redis
+    image: redis/redis-stack:7.4.0-v3
+    ports:
+      - '6379:6379' # Redis Stack
+      - '8001:8001' # Redis Insight

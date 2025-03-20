@@ -7,6 +7,7 @@ import { Page } from 'puppeteer';
 import { RarityRanting } from 'src/common/dto';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { ChronicleDto } from './dto';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 /**
@@ -22,11 +23,15 @@ import { ChronicleDto } from './dto';
  * @method getChronicleData - Retrieves the chronicle details from the given href.
  */
 export class NanarlandService {
-  constructor(private puppeteerService: PuppeteerService) {}
+  constructor(
+    private puppeteerService: PuppeteerService,
+    private redisService: RedisService,
+  ) {}
   private readonly logger = new Logger(NanarlandService.name, {
     timestamp: true,
   });
   private BASE_URL = 'https://www.nanarland.com';
+  private CACHE_TTL_SEC = 3600; // 1 h
 
   /**
    * Retrieves text information from infos paragraphs on chronicle page.
@@ -153,6 +158,43 @@ export class NanarlandService {
     throw new InternalServerErrorException(`Invalid rarity text: ${rating}`);
   }
 
+  /**
+   * Converts a given URL into a cache key by transforming its structure.
+   *
+   * The method performs the following transformations:
+   * - Removes the protocol and domain name from the URL.
+   * - Strips the `.html` extension if present.
+   * - Replaces all slashes (`/`) with colons (`:`).
+   *
+   * e.g.:
+   * https://www.nanarland.com/chroniques/nanars-a-main-armee/espionnage/007-rien-n-est-impossible.html
+   * -> {servicename}:chroniques:nanars-a-main-armee:espionnage:007-rien-n-est-impossible
+   *
+   * The resulting cache key is prefixed with the lowercase name of the service class.
+   *
+   * @param url - The URL to be converted into a cache key.
+   * @returns The transformed cache key as a string.
+   */
+  private convertUrlToCacheKey(url: string): string {
+    const editedUrl = url
+      .replace(/^(\w+:\/\/)?.*?\//, '') // Remove protocol and domain name
+      .replace(/\.html$/, '') // Remove .html extension
+      .replace(/\//g, ':'); // Replace slashes with colons
+
+    return NanarlandService.name.toLowerCase() + ':' + editedUrl;
+  }
+
+  /**
+   * Retrieves a list of chronicles URLs from the given page.
+   *
+   * This method uses a CSS selector to find all anchor elements with the class
+   * `itemFigure titlePrimary` on the page, extracts their `href` attributes,
+   * and returns a list of non-null URLs.
+   *
+   * @param page - The Puppeteer `Page` instance representing the web page to scrape.
+   * @returns A promise that resolves to an array of strings containing the URLs of the chronicles.
+   * @throws InternalServerErrorException if the retrieval process fails.
+   */
   private async getChroniclesList(page: Page): Promise<string[]> {
     try {
       return await page.$$eval('a.itemFigure.titlePrimary', (anchors) =>
@@ -438,21 +480,32 @@ export class NanarlandService {
   }
 
   /**
-   * Fetches the hrefs of all chronicles from the nanarland URL.
+   * Fetches the hrefs of all chronicles from the Nanarland URL with cache management.
+   *
+   * This method first checks the cache for stored hrefs. If cached values are found,
+   * they are returned immediately. Otherwise, it scrapes the Nanarland website to fetch
+   * the hrefs, stores them in the cache, and sets an expiration time for the cache.
    *
    * @returns {Promise<string[]>} A promise that resolves to an array of strings, each representing a href of a chronicle.
    */
-  async getChroniclesHrefs(): Promise<string[]> {
+  async getChroniclesHrefs(ignoreCache: boolean): Promise<string[]> {
     const browser = await this.puppeteerService.getBrowser();
     const page = await browser.newPage();
+    const link = `${this.BASE_URL}/chroniques/toutes-nos-chroniques.html`;
+    const cacheKey = this.convertUrlToCacheKey(link);
 
-    await page.goto(`${this.BASE_URL}/chroniques/toutes-nos-chroniques.html`);
+    await this.puppeteerService.loadContentWithCache(
+      page,
+      link,
+      cacheKey,
+      this.CACHE_TTL_SEC,
+      ignoreCache,
+    );
 
     const hrefs = await this.getChroniclesList(page);
-
+    this.logger.debug('Chronicles href answer:', hrefs);
     await page.close();
 
-    this.logger.verbose('Chronicles href:', hrefs);
     return hrefs;
   }
 
@@ -465,18 +518,28 @@ export class NanarlandService {
    * @param href - The relative URL of the chronicle to retrieve.
    * @returns A promise that resolves to a `ChronicleDto` containing the chronicle details.
    */
-  async getChronicleData(href: string): Promise<ChronicleDto> {
+  async getChronicleData(
+    href: string,
+    ignoreCache?: boolean,
+  ): Promise<ChronicleDto> {
     const browser = await this.puppeteerService.getBrowser();
     const page = await browser.newPage();
+    const link = `${this.BASE_URL}${href}`;
+    const cacheKey = this.convertUrlToCacheKey(link);
 
-    const chronicle = {} as ChronicleDto;
-    chronicle.link = `${this.BASE_URL}${href}`;
-
-    await page.goto(chronicle.link);
+    await this.puppeteerService.loadContentWithCache(
+      page,
+      link,
+      cacheKey,
+      this.CACHE_TTL_SEC,
+      ignoreCache,
+    );
 
     const infos = await this.getInfos(page);
-    this.logger.verbose('Movie Infos:', infos);
+    this.logger.debug('Movie Infos:', infos);
 
+    const chronicle = {} as ChronicleDto;
+    chronicle.link = link;
     chronicle.mainTitle = await this.getMainTitle(page);
     chronicle.genre = await this.getGenre(page);
     chronicle.genreHref = await this.getGenreHref(page);
@@ -492,10 +555,12 @@ export class NanarlandService {
     chronicle.posterLink = await this.getPoster(page);
     chronicle.averageRating = await this.getAverageRating(page);
     chronicle.rarityRating = await this.getRarityRating(page);
+    // TODO add author
+    // TODO add raters
 
     await page.close();
 
-    this.logger.verbose(`${chronicle.mainTitle} data:`, chronicle);
+    this.logger.debug(`${chronicle.mainTitle} data:`, chronicle);
     return chronicle;
   }
 }

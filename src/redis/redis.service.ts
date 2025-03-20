@@ -19,6 +19,12 @@ export class RedisService implements OnApplicationShutdown {
     }
   }
 
+  /**
+   * Retrieves the cache client instance. If the client has not been initialized,
+   * it initializes the client before returning it.
+   *
+   * @returns The initialized cache client instance.
+   */
   getCacheClient() {
     if (!this.client) {
       this.init();

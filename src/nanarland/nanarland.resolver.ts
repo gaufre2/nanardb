@@ -6,12 +6,17 @@ export class NanarlandResolver {
   constructor(private readonly nanarlandService: NanarlandService) {}
 
   @Query(() => [String])
-  async chroniclesHrefs() {
-    return this.nanarlandService.getChroniclesHrefs();
+  async chroniclesHrefs(@Args('ignoreCache') ignoreCache: boolean) {
+    return this.nanarlandService.getChroniclesHrefs(ignoreCache);
   } // TODO remove, only for test
 
   @Query(() => String)
-  async chronicleData(@Args('href') href: string) {
-    return JSON.stringify(await this.nanarlandService.getChronicleData(href));
+  async chronicleData(
+    @Args('href') href: string,
+    @Args('ignoreCache') ignoreCache: boolean,
+  ) {
+    return JSON.stringify(
+      await this.nanarlandService.getChronicleData(href, ignoreCache),
+    );
   } // TODO remove, only for test
 }

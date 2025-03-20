@@ -58,6 +58,11 @@ export class TmdbService {
     }
   }
 
+  private getCacheKey(endpoint: string, params: string[]): string {
+    const prefixKey = TmdbService.name.toLowerCase() + `:${endpoint}`;
+    const paramsKey = params.map((param) => param).join(':');
+    return prefixKey + ':' + paramsKey;
+  }
   async getMovieId(query: string, year?: number): Promise<number> {
     const movieId = await this.searchMovie(query, undefined, year);
 
@@ -74,12 +79,9 @@ export class TmdbService {
     movieId: number,
     language: string = 'fr-FR',
   ): Promise<MovieDetailsResponseDto> {
+    const endpoint = 'movie';
     const cacheClient = this.redisService.getCacheClient();
-    const cacheKey =
-      TmdbService.name.toLowerCase() +
-      ':movie' +
-      `:${movieId}` +
-      `:${language}`;
+    const cacheKey = this.getCacheKey(endpoint, [String(movieId), language]);
 
     const cacheValue = await cacheClient.get(cacheKey);
     if (cacheValue) {
@@ -91,7 +93,7 @@ export class TmdbService {
       'alternative_titles,' + 'credits,' + 'keywords,' + 'release_dates';
     const url =
       this.BASE_URL +
-      `/movie/${encodeURIComponent(movieId)}` +
+      `/${endpoint}/${encodeURIComponent(movieId)}` +
       `?append_to_response=${encodeURIComponent(appendToResponse)}` +
       `&language=${encodeURIComponent(language)}`;
 

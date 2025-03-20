@@ -16,10 +16,11 @@ export class TmdbResolver {
   @Query(() => String)
   async movieData(
     @Args('movieId') movieId: number,
+    @Args('ignoreCache') ignoreCache: boolean,
     @Args('language', { nullable: true }) language?: string,
   ) {
     return JSON.stringify(
-      await this.tmdbService.getMovieData(movieId, language),
+      await this.tmdbService.getMovieData(movieId, ignoreCache, language),
     );
   } // TODO remove, only for test
 }

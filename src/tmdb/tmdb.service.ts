@@ -26,7 +26,7 @@ export class TmdbService {
     Authorization: `Bearer ${this.TMDB_TOKEN}`,
     Accept: 'application/json',
   };
-  private CACHE_TTL_SEC = 300; // 5 min
+  private CACHE_TTL_SEC = 900; // 15 min
 
   private async searchMovie(
     query: string,
@@ -77,16 +77,21 @@ export class TmdbService {
 
   async getMovieData(
     movieId: number,
+    ignoreCache?: boolean,
     language: string = 'fr-FR',
   ): Promise<MovieDetailsResponseDto> {
     const endpoint = 'movie';
     const cacheClient = this.redisService.getCacheClient();
     const cacheKey = this.getCacheKey(endpoint, [String(movieId), language]);
 
-    const cacheValue = await cacheClient.get(cacheKey);
-    if (cacheValue) {
-      this.logger.verbose('Cached value returned, key: ' + cacheKey);
-      return JSON.parse(cacheValue) as MovieDetailsResponseDto;
+    if (!ignoreCache) {
+      const cacheValue = await cacheClient.get(cacheKey);
+      if (cacheValue) {
+        this.logger.verbose('Cached value returned, key: ' + cacheKey);
+        return JSON.parse(cacheValue) as MovieDetailsResponseDto;
+      }
+    } else {
+      this.logger.verbose('Ignoring cached value.');
     }
 
     const appendToResponse =
@@ -97,7 +102,7 @@ export class TmdbService {
       `?append_to_response=${encodeURIComponent(appendToResponse)}` +
       `&language=${encodeURIComponent(language)}`;
 
-    this.logger.verbose(`GET ${url}`);
+    this.logger.debug(`GET ${url}`);
 
     try {
       const response = await firstValueFrom(

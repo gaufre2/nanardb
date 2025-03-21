@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PuppeteerService } from './puppeteer.service';
-import { RedisService } from 'src/redis/redis.service';
 
 @Module({
-  providers: [PuppeteerService, RedisService],
+  providers: [PuppeteerService],
 })
 export class PuppeteerModule {}

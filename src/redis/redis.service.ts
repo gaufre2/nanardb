@@ -1,9 +1,14 @@
-import { Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnApplicationShutdown,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
 
 @Injectable()
-export class RedisService implements OnApplicationShutdown {
+export class RedisService implements OnModuleInit, OnApplicationShutdown {
   constructor(private config: ConfigService) {}
   private readonly logger = new Logger(RedisService.name, {
     timestamp: true,
@@ -17,6 +22,10 @@ export class RedisService implements OnApplicationShutdown {
     } catch (error) {
       this.logger.error('Failed to connect Redis client:', error);
     }
+  }
+
+  onModuleInit() {
+    this.init();
   }
 
   /**

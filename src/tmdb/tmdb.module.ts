@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { TmdbService } from './tmdb.service';
 import { HttpModule } from '@nestjs/axios';
 import { TmdbResolver } from './tmdb.resolver';
-import { RedisService } from 'src/redis/redis.service';
 
 @Module({
   imports: [
@@ -11,6 +10,6 @@ import { RedisService } from 'src/redis/redis.service';
       maxRedirects: 5,
     }),
   ],
-  providers: [TmdbService, TmdbResolver, RedisService],
+  providers: [TmdbService, TmdbResolver],
 })
 export class TmdbModule {}

@@ -10,6 +10,35 @@ import {
 } from 'class-validator';
 import { RarityRanting } from 'src/common/dto';
 
+export class UserDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsUrl()
+  @IsNotEmpty()
+  avatarLink: string;
+}
+
+export class UserRatingDto {
+  @IsNotEmpty()
+  user: UserDto;
+
+  @IsDecimal()
+  @IsOptional()
+  rating: number;
+}
+
+export class GenreDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsUrl()
+  @IsNotEmpty()
+  link: string;
+}
+
 export class ChronicleDto {
   @IsUrl()
   @IsNotEmpty()
@@ -21,27 +50,24 @@ export class ChronicleDto {
 
   @IsString()
   @IsNotEmpty()
-  author: string;
+  authorName: string;
 
-  @IsString()
   @IsArray()
-  raters: string[];
+  userRatings: UserRatingDto[];
 
-  @IsString()
-  @IsNotEmpty()
-  genre: string;
+  @IsDecimal()
+  @IsOptional()
+  averageRating: number;
 
-  @IsString()
+  @IsEnum(RarityRanting)
   @IsNotEmpty()
-  genreHref: string;
+  rarityRating: RarityRanting;
 
-  @IsString()
   @IsNotEmpty()
-  subGenre: string;
+  genre: GenreDto;
 
-  @IsString()
   @IsNotEmpty()
-  subGenreHref: string;
+  subGenre: GenreDto;
 
   @IsString()
   @IsNotEmpty()
@@ -56,7 +82,6 @@ export class ChronicleDto {
   @IsOptional()
   alternativeTitles?: string[];
 
-  @IsString()
   @IsArray()
   directors: string[];
 
@@ -72,15 +97,7 @@ export class ChronicleDto {
   @IsOptional()
   runtime: number;
 
-  @IsString()
+  @IsUrl()
   @IsOptional()
   posterLink: string;
-
-  @IsDecimal()
-  @IsOptional()
-  averageRating: number;
-
-  @IsEnum(RarityRanting)
-  @IsNotEmpty()
-  rarityRating: RarityRanting;
 }

@@ -6,8 +6,7 @@ import {
 import { Page } from 'puppeteer';
 import { RarityRanting } from 'src/common/dto';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
-import { ChronicleDto } from './dto';
-import { RedisService } from 'src/redis/redis.service';
+import { ChronicleDto, GenreDto, UserRatingDto } from './dto';
 
 @Injectable()
 /**
@@ -23,10 +22,7 @@ import { RedisService } from 'src/redis/redis.service';
  * @method getChronicleData - Retrieves the chronicle details from the given href.
  */
 export class NanarlandService {
-  constructor(
-    private puppeteerService: PuppeteerService,
-    private redisService: RedisService,
-  ) {}
+  constructor(private puppeteerService: PuppeteerService) {}
   private readonly logger = new Logger(NanarlandService.name, {
     timestamp: true,
   });
@@ -212,7 +208,7 @@ export class NanarlandService {
   /**
    * Retrieves the main title from the given chronicle.
    *
-   * @param {Page} page - The chronicle page object to extract the main title from.
+   * @param {Page} page - The chronicle page object to extract the data from.
    * @returns {Promise<string>} A promise that resolves to the main title text.
    * @throws {InternalServerErrorException} If the main title is not found on the page.
    */
@@ -226,108 +222,70 @@ export class NanarlandService {
     }
   }
 
-  private GENRE_SELECTOR =
-    'body > main > div.mainInner > nav > ol > li:nth-child(3) > a';
-
   /**
-   * Retrieves the genre from the given chronicle page.
+   * Retrieves a genre or sub-genre from the given page using the specified selector.
    *
-   * @param {Page} page - The chronicle page object to extract the genre from.
-   * @returns {Promise<string>} A promise that resolves to the genre as a string.
-   * @throws {InternalServerErrorException} If the genre name is not found or an error occurs during extraction.
+   * @param page - The chronicle page object to extract the data from.
+   * @param selector - The CSS selector used to locate the genre or sub-genre element.
+   * @returns A promise that resolves to a `GenreDto` object containing the name and link of the genre.
+   * @throws {InternalServerErrorException} If the genre link is not found or if an error occurs during extraction.
    */
-  private async getGenre(page: Page): Promise<string> {
+  private async getGenreOrSubGenre(
+    page: Page,
+    selector: string,
+  ): Promise<GenreDto> {
     try {
-      return await page.$eval(
-        this.GENRE_SELECTOR,
+      const name = await page.$eval(
+        selector,
         (el: HTMLEmbedElement) => el.innerText,
       );
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `Genre name not found (${page.url()}), error: ${error}`,
+      const link = await page.$eval(selector, (el: HTMLEmbedElement) =>
+        el.getAttribute('href'),
       );
-    }
-  }
-
-  /**
-   * Retrieves the href attribute of a genre element from the given chronicle page.
-   *
-   * @param {Page} page - The chronicle page object to evaluate.
-   * @returns {Promise<string>} - A promise that resolves to the href attribute of the genre element.
-   * @throws {InternalServerErrorException} - If the href attribute is not found or an error occurs during evaluation.
-   */
-  private async getGenreHref(page: Page): Promise<string> {
-    try {
-      const href = await page.$eval(
-        this.GENRE_SELECTOR,
-        (el: HTMLEmbedElement) => el.getAttribute('href'),
-      );
-      if (href) {
-        return href;
+      if (!link) {
+        throw new InternalServerErrorException(
+          `Genre link not found (${page.url()})`,
+        );
       }
-      throw new InternalServerErrorException(
-        `Genre name not found (${page.url()})`,
-      );
+      const genre: GenreDto = { name: name, link: link };
+      return genre;
     } catch (error) {
       throw new InternalServerErrorException(
-        `Genre name not found (${page.url()}), error: ${error}`,
-      );
-    }
-  }
-
-  private SUBGENRE_SELECTOR =
-    'body > main > div.mainInner > nav > ol > li:nth-child(4) > a';
-
-  /**
-   * Retrieves the sub-genre name from the given chronicle page.
-   *
-   * @param {Page} page - The chronicle page object to extract the sub-genre from.
-   * @returns {Promise<string>} A promise that resolves to the sub-genre name.
-   * @throws {InternalServerErrorException} If the sub-genre name is not found or an error occurs.
-   */
-  private async getSubGenre(page: Page): Promise<string> {
-    try {
-      return await page.$eval(
-        this.SUBGENRE_SELECTOR,
-        (el: HTMLEmbedElement) => el.innerText,
-      );
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `Sub genre name not found (${page.url()}), error: ${error}`,
+        `Genre not found (${page.url()}), error: ${error}`,
       );
     }
   }
 
   /**
-   * Retrieves the href attribute of a sub-genre element from the chronicle page.
+   * Retrieves the genre information from the specified page.
    *
-   * @param page - The chronicle page object representing the web page to scrape.
-   * @returns A promise that resolves to the href attribute of the sub-genre element.
-   * @throws InternalServerErrorException if the href attribute is not found or an error occurs during the process.
+   * @param page - The chronicle page object to extract the data from.
+   * @returns A promise that resolves to a `GenreDto` containing the genre details.
    */
-  private async getSubGenreHref(page: Page): Promise<string> {
-    try {
-      const href = await page.$eval(
-        this.GENRE_SELECTOR,
-        (el: HTMLEmbedElement) => el.getAttribute('href'),
-      );
-      if (href) {
-        return href;
-      }
-      throw new InternalServerErrorException(
-        `Sub genre name not found (${page.url()})`,
-      );
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `Sub genre name not found (${page.url()}), error: ${error}`,
-      );
-    }
+  private async getGenre(page: Page): Promise<GenreDto> {
+    const selector =
+      'body > main > div.mainInner > nav > ol > li:nth-child(3) > a';
+
+    return this.getGenreOrSubGenre(page, selector);
+  }
+
+  /**
+   * Retrieves the sub-genre information from the given page.
+   *
+   * @param page - The chronicle page object to extract the data from.
+   * @returns A promise that resolves to a `GenreDto` containing the sub-genre details.
+   */
+  private async getSubGenre(page: Page): Promise<GenreDto> {
+    const selector =
+      'body > main > div.mainInner > nav > ol > li:nth-child(4) > a';
+
+    return this.getGenreOrSubGenre(page, selector);
   }
 
   /**
    * Retrieves the creation year from the specified chronicle page.
    *
-   * @param page - The chronicle page object to extract the creation year from.
+   * @param page - The chronicle page object to extract the data from.
    * @returns A promise that resolves to the creation year as a number, or undefined if the year could not be determined.
    * @throws Will log an error message if the publication year is not available on the page.
    */
@@ -340,6 +298,84 @@ export class NanarlandService {
       return this.getYearFromText(createYearText);
     } catch {
       this.logger.log(`No publication year available (${page.url()})`);
+    }
+  }
+
+  /**
+   * Extracts the author's name from the given web page.
+   *
+   * @param page - The chronicle page object to extract the data from.
+   * @returns A promise that resolves to the author's name as a string.
+   * @throws InternalServerErrorException if the author's name is not found or an error occurs during extraction.
+   */
+  private async getAuthorName(page: Page): Promise<string> {
+    try {
+      const authorName = await page.$eval(
+        'body > main > div.mainInner > div > div:nth-child(1) > div.row > div.col-12.col-md-8.col-lg-8 > div.row.my-3 > div > div > figure > figcaption',
+        (el) => el.innerText,
+      );
+      if (authorName) {
+        return authorName;
+      } else {
+        throw new InternalServerErrorException(
+          `Undefined author name (${page.url()})`,
+        );
+      }
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Author name not found (${page.url()}), error: ${error}`,
+      );
+    }
+  }
+
+  /**
+   * Retrieves user ratings from the provided Puppeteer page instance.
+   *
+   * This method evaluates the DOM of the given page to extract user rating information,
+   * including the username, avatar link, and rating value. The extracted data is mapped
+   * into an array of `UserRatingDto` objects.
+   *
+   * @param page - The chronicle page object to extract the data from.
+   * @returns A promise that resolves to an array of `UserRatingDto` objects containing
+   *          user information and their respective ratings.
+   * @throws InternalServerErrorException - If any required data (username, avatar link, or rating)
+   *         is missing or if an error occurs during the evaluation process.
+   */
+  private async getUserRatings(page: Page): Promise<UserRatingDto[]> {
+    try {
+      const userRatingMapped = await page.evaluate(() => {
+        const userRatings = Array.from(
+          document.querySelectorAll('#notes .rating-user'),
+        );
+        return userRatings.map((userRating) => {
+          const username =
+            userRating.querySelector('figure figcaption')?.textContent;
+          const avatarLink = userRating
+            .querySelector('figure img')
+            ?.getAttribute('src');
+          const rating =
+            userRating.querySelector('.data .authorRate')?.textContent;
+
+          if (!username || !avatarLink || !rating) {
+            throw new InternalServerErrorException(
+              `Invalid user rating data (${page.url()}): username=${username}, avatarLink=${avatarLink}, rating=${rating}`,
+            );
+          }
+
+          return {
+            user: {
+              name: username,
+              avatarLink: avatarLink,
+            },
+            rating: parseFloat(rating),
+          };
+        });
+      });
+      return userRatingMapped;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `User rating not found (${page.url()}), error: ${error}`,
+      );
     }
   }
 
@@ -542,10 +578,12 @@ export class NanarlandService {
     chronicle.link = link;
     chronicle.mainTitle = await this.getMainTitle(page);
     chronicle.genre = await this.getGenre(page);
-    chronicle.genreHref = await this.getGenreHref(page);
     chronicle.subGenre = await this.getSubGenre(page);
-    chronicle.subGenreHref = await this.getSubGenreHref(page);
     chronicle.createYear = await this.getCreationYear(page);
+    chronicle.authorName = await this.getAuthorName(page);
+    chronicle.userRatings = await this.getUserRatings(page);
+    chronicle.averageRating = await this.getAverageRating(page);
+    chronicle.rarityRating = await this.getRarityRating(page);
     chronicle.originalTitle = this.getOriginalTitle(infos);
     chronicle.alternativeTitles = this.getAlternativeTitles(infos);
     chronicle.directors = this.getDirectors(infos);
@@ -553,10 +591,6 @@ export class NanarlandService {
     chronicle.originCountries = this.getOriginCountries(infos);
     chronicle.runtime = this.getRuntime(infos);
     chronicle.posterLink = await this.getPoster(page);
-    chronicle.averageRating = await this.getAverageRating(page);
-    chronicle.rarityRating = await this.getRarityRating(page);
-    // TODO add author
-    // TODO add raters
 
     await page.close();
 

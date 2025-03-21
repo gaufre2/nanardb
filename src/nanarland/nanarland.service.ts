@@ -30,10 +30,10 @@ export class NanarlandService {
   private CACHE_TTL_SEC = 3600; // 1 h
 
   /**
-   * Retrieves text information from infos paragraphs on chronicle page.
+   * Retrieves the text content of info paragraphs from the chronicle page.
    *
-   * @param page - The Puppeteer Page object from a nanarland.com/chroniques.
-   * @returns A promise that resolves to an array of strings, each containing the text content of a paragraph.
+   * @param page - The Puppeteer Page object from a Nanarland chronicle page.
+   * @returns A promise that resolves to an array of strings representing the paragraph texts.
    */
   private async getInfos(page: Page): Promise<string[]> {
     const infos = await page.$$eval(
@@ -44,11 +44,11 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves the information text associated with a given key from an array of info strings.
+   * Extracts the info text for a given key from the provided info strings.
    *
-   * @param key - The key to search for in the info strings.
-   * @param infos - An array of info strings, each in the format "key: value".
-   * @returns The information text associated with the given key, or undefined if the key is not found.
+   * @param key - The key to search for.
+   * @param infos - An array of info strings in "key: value" format.
+   * @returns The info text associated with the key, or undefined if not found.
    */
   private getInfoTextByKey(key: string, infos: string[]): string {
     const infoMap: { [key: string]: string } = {};
@@ -64,16 +64,16 @@ export class NanarlandService {
   }
 
   /**
-   * Splits the given text using a predefined set of separators and trims each resulting element.
+   * Splits the given text using predefined separators and returns an array of trimmed strings.
    *
-   * The separators used are:
+   * Predefined separators:
    * - Comma (`,`)
    * - Ampersand (`&`)
    * - Slash (`/`)
    * - The word "et" surrounded by spaces (` et `)
    *
-   * @param text - The input string to be split.
-   * @returns An array of trimmed strings obtained by splitting the input text.
+   * @param text - The text to split.
+   * @returns An array of trimmed substrings.
    */
   private splitTextWithSeparator(text: string): string[] {
     const REGEX_SEPARATOR = /,|&|\/|\set\s/;
@@ -81,9 +81,9 @@ export class NanarlandService {
   }
 
   /**
-   * Extracts the last 4-digit year from a given string.
+   * Extracts the last 4-digit year from the given text.
    *
-   * @param year - The string containing the year information.
+   * @param year - The input text containing the year.
    * @returns The extracted year as a number, or undefined if no valid year is found.
    */
   private getYearFromText(year: string): number | undefined {
@@ -95,19 +95,23 @@ export class NanarlandService {
   }
 
   /**
-   * Converts a duration string to the total number of minutes.
+   * Converts a duration string to total minutes.
    *
-   * The duration string can include hours and minutes in the format "XhY" where X is the number of hours
-   * and Y is the number of minutes.
-   * Supported format:
-   *  - "2h30"  -> 150 minutes
-   *  - "2h12m" -> 132 minutes
-   *  - "1h"    -> 60 minutes
-   *  - "10m"   -> 10 minutes
-   *  - "25"    -> 25 minutes
+   * @example
+   * // returns 150
+   * convertToMinutes("2h30")
+   * @example
+   * // returns 60
+   * convertToMinutes("1h")
+   * @example
+   * // returns 10
+   * convertToMinutes("10m")
+   * @example
+   * // returns 25
+   * convertToMinutes("25")
    *
-   * @param duration - The duration string to convert, e.g., "2h30".
-   * @returns The total number of minutes represented by the duration string.
+   * @param duration - The duration string (e.g., "2h30", "1h", "10m", "25").
+   * @returns The total duration in minutes.
    */
   private convertToMinutes(duration: string): number {
     const hoursMatch = duration.match(/(\d+)h/);
@@ -120,11 +124,11 @@ export class NanarlandService {
   }
 
   /**
-   * Extracts the rarity rating from a given text string.
+   * Extracts the rarity rating from the provided text.
    *
-   * @param rating - The text string containing the rarity rating, expected to be in the format "some text / rarity".
-   * @returns The corresponding `RarityRanting` enum value.
-   * @throws {InternalServerErrorException} If the rarity rating is invalid or the text format is incorrect.
+   * @param rating - The text containing the rarity rating in the format "some text / rarity".
+   * @returns The corresponding RarityRanting enum value.
+   * @throws InternalServerErrorException if the rating is invalid or the text format is incorrect.
    */
   private getRarityFromText(rating: string): RarityRanting {
     const REGEX_RATING = /\/\s*(.+)/;
@@ -155,21 +159,19 @@ export class NanarlandService {
   }
 
   /**
-   * Converts a given URL into a cache key by transforming its structure.
+   * Converts a URL into a cache key by removing protocol/domain, stripping the '.html' extension, and replacing slashes with colons.
    *
    * The method performs the following transformations:
    * - Removes the protocol and domain name from the URL.
    * - Strips the `.html` extension if present.
    * - Replaces all slashes (`/`) with colons (`:`).
    *
-   * e.g.:
-   * https://www.nanarland.com/chroniques/nanars-a-main-armee/espionnage/007-rien-n-est-impossible.html
-   * -> {servicename}:chroniques:nanars-a-main-armee:espionnage:007-rien-n-est-impossible
+   * @example
+   * // returns '{servicename}:chroniques:nanars-a-main-armee:espionnage:007-rien-n-est-impossible'
+   * convertUrlToCacheKey('https://www.nanarland.com/chroniques/nanars-a-main-armee/espionnage/007-rien-n-est-impossible.html')
    *
-   * The resulting cache key is prefixed with the lowercase name of the service class.
-   *
-   * @param url - The URL to be converted into a cache key.
-   * @returns The transformed cache key as a string.
+   * @param url - The URL to convert.
+   * @returns The cache key as a string, prefixed with the service name.
    */
   private convertUrlToCacheKey(url: string): string {
     const editedUrl = url
@@ -181,15 +183,11 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves a list of chronicles URLs from the given page.
+   * Retrieves a list of chronicle URLs from the specified page.
    *
-   * This method uses a CSS selector to find all anchor elements with the class
-   * `itemFigure titlePrimary` on the page, extracts their `href` attributes,
-   * and returns a list of non-null URLs.
-   *
-   * @param page - The Puppeteer `Page` instance representing the web page to scrape.
-   * @returns A promise that resolves to an array of strings containing the URLs of the chronicles.
-   * @throws InternalServerErrorException if the retrieval process fails.
+   * @param page - The Puppeteer Page object.
+   * @returns A promise that resolves to an array of strings representing the chronicle URLs.
+   * @throws InternalServerErrorException if extraction fails.
    */
   private async getChroniclesList(page: Page): Promise<string[]> {
     try {
@@ -206,11 +204,11 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves the main title from the given chronicle.
+   * Retrieves the main title text from the chronicle page.
    *
-   * @param {Page} page - The chronicle page object to extract the data from.
-   * @returns {Promise<string>} A promise that resolves to the main title text.
-   * @throws {InternalServerErrorException} If the main title is not found on the page.
+   * @param page - The Puppeteer Page object.
+   * @returns A promise that resolves to the main title.
+   * @throws InternalServerErrorException if the main title is not found.
    */
   private async getMainTitle(page: Page): Promise<string> {
     try {
@@ -223,12 +221,12 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves a genre or sub-genre from the given page using the specified selector.
+   * Retrieves the genre or sub-genre details from the specified page using the given selector.
    *
-   * @param page - The chronicle page object to extract the data from.
-   * @param selector - The CSS selector used to locate the genre or sub-genre element.
-   * @returns A promise that resolves to a `GenreDto` object containing the name and link of the genre.
-   * @throws {InternalServerErrorException} If the genre link is not found or if an error occurs during extraction.
+   * @param page - The Puppeteer Page object.
+   * @param selector - The CSS selector to locate the genre element.
+   * @returns A promise that resolves to a GenreDto containing the genre details.
+   * @throws InternalServerErrorException if the genre information is not found.
    */
   private async getGenreOrSubGenre(
     page: Page,
@@ -257,10 +255,10 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves the genre information from the specified page.
+   * Retrieves the genre information from the chronicle page.
    *
-   * @param page - The chronicle page object to extract the data from.
-   * @returns A promise that resolves to a `GenreDto` containing the genre details.
+   * @param page - The Puppeteer Page object.
+   * @returns A promise that resolves to a GenreDto with genre details.
    */
   private async getGenre(page: Page): Promise<GenreDto> {
     const selector =
@@ -270,10 +268,10 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves the sub-genre information from the given page.
+   * Retrieves the sub-genre information from the chronicle page.
    *
-   * @param page - The chronicle page object to extract the data from.
-   * @returns A promise that resolves to a `GenreDto` containing the sub-genre details.
+   * @param page - The Puppeteer Page object.
+   * @returns A promise that resolves to a GenreDto with sub-genre details.
    */
   private async getSubGenre(page: Page): Promise<GenreDto> {
     const selector =
@@ -283,11 +281,10 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves the creation year from the specified chronicle page.
+   * Retrieves the creation (publication) year from the chronicle page.
    *
-   * @param page - The chronicle page object to extract the data from.
-   * @returns A promise that resolves to the creation year as a number, or undefined if the year could not be determined.
-   * @throws Will log an error message if the publication year is not available on the page.
+   * @param page - The Puppeteer Page object.
+   * @returns A promise that resolves to the creation year as a number, or undefined if not available.
    */
   private async getCreationYear(page: Page): Promise<number | undefined> {
     try {
@@ -302,11 +299,11 @@ export class NanarlandService {
   }
 
   /**
-   * Extracts the author's name from the given web page.
+   * Retrieves the author's name from the chronicle page.
    *
-   * @param page - The chronicle page object to extract the data from.
-   * @returns A promise that resolves to the author's name as a string.
-   * @throws InternalServerErrorException if the author's name is not found or an error occurs during extraction.
+   * @param page - The Puppeteer Page object.
+   * @returns A promise that resolves to the author's name.
+   * @throws InternalServerErrorException if the author's name is not found.
    */
   private async getAuthorName(page: Page): Promise<string> {
     try {
@@ -329,17 +326,11 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves user ratings from the provided Puppeteer page instance.
+   * Retrieves user ratings from the chronicle page.
    *
-   * This method evaluates the DOM of the given page to extract user rating information,
-   * including the username, avatar link, and rating value. The extracted data is mapped
-   * into an array of `UserRatingDto` objects.
-   *
-   * @param page - The chronicle page object to extract the data from.
-   * @returns A promise that resolves to an array of `UserRatingDto` objects containing
-   *          user information and their respective ratings.
-   * @throws InternalServerErrorException - If any required data (username, avatar link, or rating)
-   *         is missing or if an error occurs during the evaluation process.
+   * @param page - The Puppeteer Page object.
+   * @returns A promise that resolves to an array of UserRatingDto objects containing user ratings.
+   * @throws InternalServerErrorException if any required user rating data is missing.
    */
   private async getUserRatings(page: Page): Promise<UserRatingDto[]> {
     try {
@@ -380,10 +371,10 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves the original title from the provided information array.
+   * Retrieves the original title from the provided info strings.
    *
-   * @param infos - An array of strings containing various information.
-   * @returns The original title if found, otherwise `undefined`.
+   * @param infos - An array of info strings.
+   * @returns The original title, or undefined if not found.
    */
   private getOriginalTitle(infos: string[]): string | undefined {
     const originalTitle = this.getInfoTextByKey('Titre original', infos);
@@ -393,10 +384,10 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves the list of directors from the provided information array.
+   * Retrieves the list of directors from the provided info strings.
    *
-   * @param infos - An array of strings containing various information.
-   * @returns An array of strings representing the directors.
+   * @param infos - An array of info strings.
+   * @returns An array of director names.
    */
   private getDirectors(infos: string[]): string[] {
     const directorsText = this.getInfoTextByKey('Réalisateur(s)', infos);
@@ -404,10 +395,10 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves alternative titles from the provided information array.
+   * Retrieves alternative titles from the provided info strings.
    *
-   * @param infos - An array of strings containing information.
-   * @returns An array of alternative titles if found, otherwise `undefined`.
+   * @param infos - An array of info strings.
+   * @returns An array of alternative titles, or undefined if none are available.
    */
   private getAlternativeTitles(infos: string[]): string[] | undefined {
     const alternativeTitlesText = this.getInfoTextByKey(
@@ -421,10 +412,10 @@ export class NanarlandService {
   }
 
   /**
-   * Extracts the release year from an array of information strings.
+   * Extracts the release year from the provided info strings.
    *
-   * @param infos - An array of strings containing various information.
-   * @returns The release year as a number if found, otherwise undefined.
+   * @param infos - An array of info strings.
+   * @returns The release year as a number, or undefined if not found.
    */
   private getReleaseYear(infos: string[]): number | undefined {
     const releaseYearText = this.getInfoTextByKey('Année', infos);
@@ -432,10 +423,10 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves the origin countries from the provided information array.
+   * Retrieves the origin countries from the provided info strings.
    *
-   * @param infos - An array of strings containing various pieces of information.
-   * @returns An array of strings representing the origin countries.
+   * @param infos - An array of info strings.
+   * @returns An array of origin country names.
    */
   private getOriginCountries(infos: string[]): string[] {
     const originCountriesText = this.getInfoTextByKey('Nationalité', infos);
@@ -443,9 +434,9 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves the runtime from the provided information array and converts it to minutes.
+   * Retrieves the runtime from the provided info strings and converts it to minutes.
    *
-   * @param infos - An array of strings containing various information.
+   * @param infos - An array of info strings.
    * @returns The runtime in minutes.
    */
   private getRuntime(infos: string[]): number {
@@ -454,11 +445,11 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves the poster image URL from the given chronicle page.
+   * Retrieves the poster image URL from the chronicle page.
    *
-   * @param {Page} page - The chronicle page object to extract the poster from.
-   * @returns {Promise<string>} - A promise that resolves to the URL of the poster image.
-   * @throws {InternalServerErrorException} - Throws an exception if the poster image is not found or any other error occurs.
+   * @param page - The Puppeteer Page object.
+   * @returns A promise that resolves to the URL of the poster image.
+   * @throws InternalServerErrorException if the poster is not found.
    */
   private async getPoster(page: Page): Promise<string> {
     try {
@@ -474,11 +465,11 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves the average rating from the specified page.
+   * Retrieves the average user rating from the chronicle page.
    *
-   * @param {Page} page - The page object to extract the average rating from.
-   * @returns {Promise<number>} - A promise that resolves to the average rating as a number.
-   * @throws {InternalServerErrorException} - Throws an exception if the average rating element is not found or an error occurs.
+   * @param page - The Puppeteer Page object.
+   * @returns A promise that resolves to the average rating value.
+   * @throws InternalServerErrorException if the average rating is not found.
    */
   private async getAverageRating(page: Page): Promise<number> {
     try {
@@ -495,11 +486,11 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves the rarity rating from the given chronicle page.
+   * Retrieves the rarity rating from the chronicle page.
    *
-   * @param {Page} page - The chronicle page object to extract the rarity rating from.
-   * @returns {Promise<RarityRanting>} A promise that resolves to the rarity rating.
-   * @throws {InternalServerErrorException} If the rarity rating element is not found or an error occurs during extraction.
+   * @param page - The Puppeteer Page object.
+   * @returns A promise that resolves to a RarityRanting value.
+   * @throws InternalServerErrorException if the rarity rating is not found.
    */
   private async getRarityRating(page: Page): Promise<RarityRanting> {
     try {
@@ -516,13 +507,10 @@ export class NanarlandService {
   }
 
   /**
-   * Fetches the hrefs of all chronicles from the Nanarland URL with cache management.
+   * Fetches the hrefs of all chronicles from Nanarland, utilizing cache management.
    *
-   * This method first checks the cache for stored hrefs. If cached values are found,
-   * they are returned immediately. Otherwise, it scrapes the Nanarland website to fetch
-   * the hrefs, stores them in the cache, and sets an expiration time for the cache.
-   *
-   * @returns {Promise<string[]>} A promise that resolves to an array of strings, each representing a href of a chronicle.
+   * @param ignoreCache - A flag to bypass the cache if set to true.
+   * @returns A promise that resolves to an array of chronicle href strings.
    */
   async getChroniclesHrefs(ignoreCache: boolean): Promise<string[]> {
     const browser = await this.puppeteerService.getBrowser();
@@ -546,13 +534,11 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves the chronicle details from the given href.
+   * Retrieves detailed information for a chronicle from its href.
    *
-   * This method uses Puppeteer to navigate to the specified URL and extract various details
-   * about the chronicle, such as titles, genres, directors, release year, and ratings.
-   *
-   * @param href - The relative URL of the chronicle to retrieve.
-   * @returns A promise that resolves to a `ChronicleDto` containing the chronicle details.
+   * @param href - The relative URL of the chronicle.
+   * @param ignoreCache - (Optional) A flag to bypass cache if set to true.
+   * @returns A promise that resolves to a ChronicleDto containing chronicle details.
    */
   async getChronicleData(
     href: string,

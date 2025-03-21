@@ -19,21 +19,10 @@ model User {
   username String @unique
   avatar   Bytes?
 
-  writtenChronicles Chronicle[] @relation("Author")
-  ratedChronicles   Chronicle[] @relation("Raters")
+  writtenChronicles Chronicle[]
+  ratings           ChronicleRating[]
 
   @@map("users")
-}
-
-model Director {
-  id Int @id @default(autoincrement())
-
-  name String  @unique
-  link String?
-
-  chronicles Chronicle[]
-
-  @@map("directors")
 }
 
 model Genre {
@@ -71,6 +60,18 @@ enum RarityRating {
   NEVER_RELEASED
 }
 
+model ChronicleRating {
+  chronicleId Int
+  userId      String
+
+  rating Decimal
+
+  chronicle Chronicle @relation(fields: [chronicleId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@id([chronicleId, userId])
+}
+
 model Chronicle {
   id        Int      @id @default(autoincrement())
   addedAt   DateTime @default(now())
@@ -79,28 +80,28 @@ model Chronicle {
   link       String @unique
   createYear Int?
 
-  author   User   @relation("Author", fields: [authorId], references: [id])
+  author   User   @relation(fields: [authorId], references: [id])
   authorId String
-  raters   User[] @relation("Raters")
+
+  ratings ChronicleRating[]
+  averageRating Decimal
+  rarityRating  RarityRating?
 
   genre      Genre    @relation(fields: [genreId], references: [id])
   genreId    Int
   subGenre   SubGenre @relation(fields: [subGenreId], references: [id])
   subGenreId Int
 
-  mainTitle         String     @unique
+  mainTitle         String   @unique
   originalTitle     String?
   alternativeTitles String[]
-  directors         Director[]
+  directors         String[]
   releaseYear       Int?
   originCountries   String[]
   runtime           Int?
 
   poster     Bytes?
   posterFile String?
-
-  averageRating Decimal
-  rarityRating  RarityRating?
 
   tmdbId Int?
 

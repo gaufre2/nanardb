@@ -7,6 +7,7 @@ import { Page } from 'puppeteer';
 import { RarityRanting } from 'src/common/dto';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { ChronicleDto, GenreDto, UserRatingDto } from './dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 /**
@@ -22,11 +23,14 @@ import { ChronicleDto, GenreDto, UserRatingDto } from './dto';
  * @method getChronicleData - Retrieves the chronicle details from the given href.
  */
 export class NanarlandService {
-  constructor(private puppeteerService: PuppeteerService) {}
+  constructor(
+    private config: ConfigService,
+    private puppeteerService: PuppeteerService,
+  ) {}
   private readonly logger = new Logger(NanarlandService.name, {
     timestamp: true,
   });
-  private BASE_URL = 'https://www.nanarland.com';
+  private BASE_URL = this.config.getOrThrow<string>('NANARLAND_BASE_URL');
   private CACHE_TTL_SEC = 3600; // 1 h
 
   /**

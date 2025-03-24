@@ -1,0 +1,1378 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Pumping Iron 2 - la chronique de Nanarland</title>
+    <meta name="author" content="Nanarland" />
+    <meta name="copyright" content="Nanarland" />
+    <meta property="og:locale" content="fr" />
+    <meta property="og:type" content="website" />
+
+    <meta
+      property="og:title"
+      content="Pumping&#x20;Iron&#x20;2&#x20;-&#x20;la&#x20;chronique&#x20;de&#x20;Nanarland"
+    />
+    <meta name="description" content="Culturisme&#x20;&amp;&#x20;philosophie" />
+    <meta
+      property="og:description"
+      content="Culturisme&#x20;&amp;&#x20;philosophie"
+    />
+    <meta
+      property="og:image"
+      content="https://www.nanarland.com/media/cache/resolve/front_meta_image/uploads/films/5e8b55fa7ab85-pumping-iron-2-jaquette.jpg"
+    />
+
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="https://www.nanarland.com/static-assets/front/images/_favicon/apple-touch-icon.png?v=2"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="https://www.nanarland.com/static-assets/front/images/_favicon/favicon-32x32.png?v=2"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="https://www.nanarland.com/static-assets/front/images/_favicon/favicon-16x16.png?v=2"
+    />
+    <link
+      rel="manifest"
+      href="https://www.nanarland.com/static-assets/front/images/_favicon/site.webmanifest?v=2"
+    />
+    <link
+      rel="mask-icon"
+      href="https://www.nanarland.com/static-assets/front/images/_favicon/safari-pinned-tab.svg?v=2"
+      color="#cc3030"
+    />
+    <link
+      rel="shortcut icon"
+      href="https://www.nanarland.com/static-assets/front/images/_favicon/favicon.ico?v=2"
+    />
+    <meta name="apple-mobile-web-app-title" content="Nanarland" />
+    <meta name="application-name" content="Nanarland" />
+    <meta name="msapplication-TileColor" content="#272525" />
+    <meta
+      name="msapplication-config"
+      content="https://www.nanarland.com/static-assets/front/images/_favicon/browserconfig.xml?v=2"
+    />
+    <meta name="theme-color" content="#cc3030" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="/build/front/css/base.ad1ed183.css" />
+    <link rel="stylesheet" href="/build/front/css/films.4c472c0a.css" />
+  </head>
+  <body>
+    <header id="header" class="move-when-foreground">
+      <div class="inner">
+        <div class="container">
+          <a
+            class="logo"
+            href="/"
+            title="Nanarland le site des mauvais films sympathiques"
+          >
+            <img
+              src="/static-assets/front/images/logo-nanarland.svg"
+              alt="Nanarland le site des mauvais films sympathiques"
+              title="Nanarland le site des mauvais films sympathiques"
+              width="594"
+              height="204"
+            />
+          </a>
+
+          <div class="rightPart">
+            <button
+              type="button"
+              class="btnToggleSearch"
+              title="Afficher la recherche"
+            >
+              <i class="las la-search" aria-hidden="true"></i
+              ><span class="sr-only">Rechercher</span>
+            </button>
+            <div class="d-flex justify-content-end align-items-center">
+              <nav>
+                <a
+                  class="active"
+                  href="/chroniques"
+                  title="Nos chroniques de films, classées par catégories"
+                  >Films</a
+                >
+                <a
+                  class=""
+                  href="/personnalites"
+                  title="Nos biographies d&#039;acteurs et réalisateurs"
+                  >Personnalités</a
+                >
+                <a class="" href="/videos" title="Nos extraits de films"
+                  >Extraits vidéo</a
+                >
+                <a class="" href="/glossaire" title="Le glossaire de Nanarland"
+                  >Glossaire</a
+                >
+                <a
+                  class=""
+                  href="/interviews"
+                  title="Les interviews de Nanarland"
+                  >Interviews</a
+                >
+              </nav>
+              <button
+                type="button"
+                class="btnToggleFullMenu"
+                title="Afficher la menu"
+              >
+                <i class="las la-bars" aria-hidden="true"></i
+                ><span class="sr-only">Menu</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <form
+      id="formSearch"
+      class="foreground"
+      method="get"
+      onsubmit="return false;"
+    >
+      <div class="container">
+        <div class="firstRow">
+          <img
+            class="logo"
+            src="/static-assets/front/images/logo-nanarland-white-red.svg"
+            alt="Nanarland le site des mauvais films sympathiques"
+            title="Nanarland le site des mauvais films sympathiques"
+            width="200"
+            height="72"
+          />
+          <button
+            type="button"
+            class="btnToggleSearch btnClose"
+            title="Fermer la recherche"
+          >
+            <i class="las la-times" aria-hidden="true"></i
+            ><span class="sr-only">Fermer</span>
+          </button>
+        </div>
+        <div class="inner">
+          <input
+            id="autoComplete"
+            type="search"
+            name="search"
+            placeholder="Saisissez votre recherche"
+            autocomplete="false"
+            value=""
+          />
+          <div class="loading">
+            <div class="spinner-border text-primary" role="status">
+              <span class="sr-only">Recherche...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div id="fullMenu" class="foreground">
+      <div class="container">
+        <div class="firstRow">
+          <img
+            class="logo"
+            src="/static-assets/front/images/logo-nanarland-white-red.svg"
+            alt="Nanarland le site des mauvais films sympathiques"
+            title="Nanarland le site des mauvais films sympathiques"
+            width="200"
+            height="72"
+          />
+          <button
+            type="button"
+            class="btnToggleFullMenu btnClose"
+            title="Masquer la menu"
+          >
+            <i class="las la-times" aria-hidden="true"></i
+            ><span class="sr-only">Fermer</span>
+          </button>
+        </div>
+      </div>
+      <div class="inner">
+        <div class="container">
+          <nav>
+            <ul class="menu menu-xs">
+              <li>
+                <a
+                  class="titleMenu"
+                  href="/chroniques"
+                  title="Nos chroniques de films, classées par catégories"
+                  >Films</a
+                >
+              </li>
+              <li>
+                <a
+                  class="titleMenu"
+                  href="/personnalites"
+                  title="Nos biographies d&#039;acteurs et réalisateurs"
+                  >Personnalités</a
+                >
+              </li>
+              <li>
+                <a
+                  class="titleMenu"
+                  href="/videos"
+                  title="Nos extraits de films"
+                  >Extraits vidéo</a
+                >
+              </li>
+              <li>
+                <a
+                  class="titleMenu"
+                  href="/nanaroscope"
+                  title="Nanaroscope, avec Arte Creative"
+                  >Nanaroscope</a
+                >
+              </li>
+              <li>
+                <a
+                  class="titleMenu"
+                  href="/interviews/nanarland-tv"
+                  title="Nanarland TV"
+                  >Nanarland TV</a
+                >
+              </li>
+              <li>
+                <a
+                  class="titleMenu"
+                  href="/interviews/entretiens"
+                  title="Les entretiens de Nanarland"
+                  >Entretiens</a
+                >
+              </li>
+              <li>
+                <a
+                  class="titleMenu"
+                  href="/escales-a-nanarland"
+                  title="Escales à Nanarland avec Allociné"
+                  >Escale à Nanarland</a
+                >
+              </li>
+              <li class="w-100"></li>
+              <li>
+                <a class="titleMenu" href="/blog" title="Blog">Blog</a>
+              </li>
+              <li>
+                <a
+                  class="titleMenu"
+                  href="/podcast-radio/radio-blog"
+                  title="Radio Blog"
+                  >Radio Blog</a
+                >
+              </li>
+              <li>
+                <a
+                  class="titleMenu"
+                  href="http://nanarland-podcast.lepodcast.fr/"
+                  title="Podcast"
+                  target="_blank"
+                  rel="noopener"
+                  >Podcast</a
+                >
+              </li>
+              <li class="w-100"></li>
+              <li>
+                <a
+                  class="titleMenu"
+                  href="/glossaire"
+                  title="Le glossaire de Nanarland"
+                  >Glossaire</a
+                >
+              </li>
+              <li>
+                <a class="titleMenu" href="/bibliographie" title="Bibliographie"
+                  >Bibliographie</a
+                >
+              </li>
+              <li>
+                <a
+                  class="titleMenu"
+                  href="/divers/philosophie.html"
+                  title="Philosophie"
+                  >Philosophie</a
+                >
+              </li>
+              <li>
+                <a
+                  class="titleMenu"
+                  href="/romans-photo/les-aventures-de-max-thayer.html"
+                  title="Les aventures de Max Thayer - Roman photo"
+                  >Les aventures de Max Thayer</a
+                >
+              </li>
+              <li>
+                <a
+                  class="titleMenu"
+                  href="/romans-photo/les-aventures-de-stuart-smith.html"
+                  title="Les aventures de Stuart Smith - Roman photo"
+                  >Les aventures de Stuart Smith</a
+                >
+              </li>
+              <li class="w-100 mt-5 mb-2 text-center">
+                <a
+                  class="titleMenu"
+                  href="https://forum.nanarland.com/"
+                  title="Le Forum de Nanarland"
+                  target="_blank"
+                  rel="noopener"
+                  >Forum</a
+                >
+                <a class="titleMenu ml-5" href="/contacts" title="Contacts"
+                  >Contacts</a
+                >
+              </li>
+              <li class="w-100 text-center socialLinks">
+                <a
+                  href="https://www.facebook.com/nanarland/"
+                  target="_blank"
+                  rel="noopener"
+                  title="Nanarland sur Facebook"
+                  ><i class="lab la-facebook-square" aria-hidden="true"></i
+                ></a>
+                <a
+                  href="https://twitter.com/nanarland/"
+                  target="_blank"
+                  rel="noopener"
+                  title="Nanarland sur Twitter"
+                  ><i class="lab la-twitter" aria-hidden="true"></i
+                ></a>
+                <a
+                  href="https://www.instagram.com/nanarland_officiel/"
+                  target="_blank"
+                  rel="noopener"
+                  title="Nanarland sur Instagram"
+                  ><i class="lab la-instagram" aria-hidden="true"></i
+                ></a>
+              </li>
+            </ul>
+
+            <div class="d-flex align-items-start">
+              <ul class="menu menu-lg" style="width: 55%">
+                <li>
+                  <a
+                    class="titleMenu"
+                    href="/chroniques"
+                    title="Nos chroniques de films, classées par catégories"
+                    >Films</a
+                  >
+                  <ul>
+                    <li>
+                      <a
+                        href="/chroniques/toutes-nos-chroniques.html"
+                        title="Toutes nos chroniques"
+                        >Toutes nos chroniques</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/chroniques/les-top-de-la-redac.html"
+                        title="Top de la rédac&#039;"
+                        >Top de la rédac&#039;</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/chroniques/les-25-dernieres.html"
+                        title="Les 25 dernières chroniques"
+                        >Les 25 dernières</a
+                      >
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                      <a
+                        href="/chroniques/nanars-fantastiques"
+                        title="Nanars fantastiques"
+                        >Nanars fantastiques</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/chroniques/nanars-monstrueux"
+                        title="Nanars monstrueux"
+                        >Nanars monstrueux</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/chroniques/nanars-epiques"
+                        title="Nanars épiques"
+                        >Nanars épiques</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/chroniques/nanars-d-action"
+                        title="Nanars d&#039;action"
+                        >Nanars d&#039;action</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/chroniques/nanars-a-main-armee"
+                        title="Nanars à main armée"
+                        >Nanars à main armée</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/chroniques/comedies-nanardes"
+                        title="Comédies nanardes"
+                        >Comédies nanardes</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/chroniques/nanars-martiaux"
+                        title="Nanars martiaux"
+                        >Nanars martiaux</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/chroniques/nanars-gnangnan"
+                        title="Nanars gnangnan"
+                        >Nanars gnangnan</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/chroniques/aux-portes-du-nanar"
+                        title="Aux portes du nanar"
+                        >Aux portes du nanar</a
+                      >
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                      <a
+                        href="/on-s-est-fait-avoir"
+                        title="On s&#039;est fait avoir"
+                        >On s&#039;est fait avoir</a
+                      >
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <a
+                    class="titleMenu"
+                    href="/personnalites"
+                    title="Nos biographies d&#039;acteurs et réalisateurs"
+                    >Personnalités</a
+                  >
+                  <ul>
+                    <li>
+                      <a
+                        href="/personnalites/acteurs/les-pointures"
+                        title="Les pointures"
+                        >Les pointures</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/personnalites/acteurs/les-tetes-d-affiche"
+                        title="Les têtes d&#039;affiche"
+                        >Les têtes d&#039;affiche</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/personnalites/acteurs/les-grandes-figures-occasionnelles"
+                        title="Les grandes figures occasionnelles"
+                        >Les grandes figures occasionnelles</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/personnalites/acteurs/les-bisseux"
+                        title="Les bisseux"
+                        >Les bisseux</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/personnalites/acteurs/les-acteurs-connotes"
+                        title="Les acteurs connotés"
+                        >Les acteurs connotés</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/personnalites/realisateurs-producteurs"
+                        title="Réalisateurs &amp; producteurs"
+                        >Réalisateurs &amp; producteurs</a
+                      >
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <span class="titleMenu">Vidéos</span>
+                  <ul>
+                    <li>
+                      <a href="/videos" title="Nos extraits de films"
+                        >Extraits vidéo</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/nanaroscope"
+                        title="Nanaroscope, avec Arte Creative"
+                        >Nanaroscope</a
+                      >
+                    </li>
+                    <li>
+                      <a href="/interviews/nanarland-tv" title="Nanarland TV"
+                        >Nanarland TV</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        href="/escales-a-nanarland"
+                        title="Escales à Nanarland avec Allociné"
+                        >Escale à Nanarland</a
+                      >
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+              <div style="width: 45%">
+                <ul class="menu menu-lg">
+                  <li>
+                    <a
+                      class="titleMenu"
+                      href="/interviews"
+                      title="Les interviews de Nanarland"
+                      >Interviews</a
+                    >
+                    <ul>
+                      <li>
+                        <a
+                          href="/interviews/entretiens"
+                          title="Les entretiens de Nanarland"
+                          >Entretiens</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          href="/nanaroscope"
+                          title="Nanaroscope, avec Arte Creative"
+                          >Nanaroscope</a
+                        >
+                      </li>
+                      <li>
+                        <a href="/interviews/nanarland-tv" title="Nanarland TV"
+                          >Nanarland TV</a
+                        >
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <span class="titleMenu">Dossiers</span>
+                    <ul>
+                      <li>
+                        <a href="/bibliographie" title="Bibliographie"
+                          >Bibliographie</a
+                        >
+                      </li>
+                      <li>
+                        <a href="/divers/philosophie.html" title="Philosophie"
+                          >Philosophie</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          href="/romans-photo/les-aventures-de-max-thayer.html"
+                          title="Les aventures de Max Thayer - Roman photo"
+                          >Les aventures de Max Thayer</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          href="/romans-photo/les-aventures-de-stuart-smith.html"
+                          title="Les aventures de Stuart Smith - Roman photo"
+                          >Les aventures de Stuart Smith</a
+                        >
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="last">
+                    <a
+                      class="titleMenu"
+                      href="/podcast-radio"
+                      title="Podcast &amp; Radio"
+                      >Podcast &amp; Radio</a
+                    >
+                    <ul>
+                      <li>
+                        <a href="/podcast-radio/radio-blog" title="Radio Blog"
+                          >Radio Blog</a
+                        >
+                      </li>
+                      <li>
+                        <a
+                          href="http://nanarland-podcast.lepodcast.fr/"
+                          title="Podcast"
+                          target="_blank"
+                          rel="noopener"
+                          >Podcast</a
+                        >
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+                <ul class="menu menu-lg mt-5">
+                  <li>
+                    <a
+                      class="titleMenu"
+                      href="/glossaire"
+                      title="Le glossaire de Nanarland"
+                      >Glossaire</a
+                    >
+                  </li>
+                  <li>
+                    <a class="titleMenu" href="/blog" title="Blog">Blog</a>
+                  </li>
+                  <li>
+                    <a
+                      class="titleMenu"
+                      href="https://forum.nanarland.com/"
+                      title="Le Forum de Nanarland"
+                      target="_blank"
+                      rel="noopener"
+                      >Forum</a
+                    >
+                  </li>
+                  <li class="last">
+                    <a class="titleMenu" href="/contacts" title="Contacts"
+                      >Contacts</a
+                    >
+                  </li>
+                </ul>
+                <ul class="menu menu-lg mt-3 justify-content-end">
+                  <li class="text-right last socialLinks">
+                    <a
+                      href="https://www.facebook.com/nanarland/"
+                      target="_blank"
+                      rel="noopener"
+                      title="Nanarland sur Facebook"
+                      ><i class="lab la-facebook-square" aria-hidden="true"></i
+                    ></a>
+                    <a
+                      href="https://twitter.com/nanarland/"
+                      target="_blank"
+                      rel="noopener"
+                      title="Nanarland sur Twitter"
+                      ><i class="lab la-twitter" aria-hidden="true"></i
+                    ></a>
+                    <a
+                      href="https://www.instagram.com/nanarland_officiel/"
+                      target="_blank"
+                      rel="noopener"
+                      title="Nanarland sur Instagram"
+                      ><i class="lab la-instagram" aria-hidden="true"></i
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <main class="move-when-foreground">
+      <div class="mainInner">
+        <nav aria-label="breadcrumb" class="container">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item home">
+              <a href="/" title="Page d'accueil"
+                ><i class="las la-home" aria-hidden="true"></i
+              ></a>
+            </li>
+            <li class="breadcrumb-item">
+              <a
+                href="/chroniques"
+                title="Nos chroniques de films, classées par catégories"
+                >Films</a
+              >
+            </li>
+            <li class="breadcrumb-item">
+              <a
+                href="/chroniques/aux-portes-du-nanar"
+                title="Aux portes du nanar"
+                >Aux portes du nanar</a
+              >
+            </li>
+            <li class="breadcrumb-item">
+              <a
+                href="/chroniques/aux-portes-du-nanar/au-dela-du-nanar"
+                title="Au-delà du nanar"
+                >Au-delà du nanar</a
+              >
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              Pumping Iron 2
+            </li>
+          </ol>
+        </nav>
+
+        <div class="itemSingle">
+          <div class="container">
+            <h1 id="scrollTopTarget" class="mainTitle">Pumping Iron 2</h1>
+
+            <small class="d-block text-center text-muted"
+              >(1ère publication de cette chronique : 2007)</small
+            >
+
+            <hr class="mini grey" />
+
+            <div class="sharethis-inline-share-buttons mb-4"></div>
+            <div class="row">
+              <div class="col-12 col-md-4 col-lg-4 mb-3 mb-md-0">
+                <img
+                  class="w-100"
+                  src="https://www.nanarland.com/media/cache/resolve/front_film_single_cover/uploads/films/5e8b55fa7ab85-pumping-iron-2-jaquette.jpg"
+                  alt="Pumping Iron 2"
+                  title="Pumping Iron 2"
+                />
+              </div>
+              <div class="col-12 col-md-8 col-lg-8">
+                <p class="baseInfos">
+                  <strong class="mr-1">Titre original :</strong>
+                  <span class="list"> <span>The Comeback</span> </span>
+                </p>
+
+                <p class="baseInfos">
+                  <strong class="mr-1">Titre(s) alternatif(s) :</strong>
+                  <span class="list">
+                    <em>Aucun</em>
+                  </span>
+                </p>
+
+                <p class="baseInfos">
+                  <strong class="mr-1">Réalisateur(s) :</strong>
+                  <span class="list"><span>Geoff Bennett </span></span>
+                </p>
+
+                <p><strong class="mr-1">Année :</strong> 1980</p>
+                <p><strong class="mr-1">Nationalité :</strong> Australie</p>
+                <p>
+                  <strong class="mr-1">Durée :</strong> 1h18 selon IMDB, 45 mn
+                  en VF
+                </p>
+                <p>
+                  <strong class="mr-1">Genre :</strong> Culturisme option
+                  philosophie
+                </p>
+
+                <p class="baseInfos">
+                  <strong class="mr-1">Acteurs principaux :</strong>
+                  <span class="list"
+                    ><a
+                      href="/personnalites/acteurs/les-tetes-d-affiche/arnold-schwarzenegger.html"
+                      title="Arnold Schwarzenegger - la biographie par Nanarland"
+                      >Arnold Schwarzenegger</a
+                    >, Tom Platz, Frank Zane</span
+                  >
+                </p>
+
+                <div class="row my-3">
+                  <div class="col-12 col-sm-5 col-md-5 col-lg-4">
+                    <div class="rating-user">
+                      <figure class="user">
+                        <i
+                          title="Kevo42"
+                          class="user-avatar avatar-default"
+                        ></i>
+                        <figcaption class="pseudo">Kevo42</figcaption>
+                      </figure>
+                      <div class="rate">
+                        <div>NOTE</div>
+                        <div class="data">
+                          <span class="authorRate">2.5</span> <sub>/ 5</sub>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-3 d-flex flex-column align-items-start">
+                  <a class="text-body" href="#cote-rarete"
+                    >Comment se procurer ce film ? Consulter sa cote de rareté
+                    <i
+                      class="text-primary las la-caret-right"
+                      aria-hidden="true"
+                    ></i
+                  ></a>
+                  <a class="text-body" href="#notes"
+                    >Consulter les notes des membres
+                    <i
+                      class="text-primary las la-caret-right"
+                      aria-hidden="true"
+                    ></i
+                  ></a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="container">
+            <hr class="mini red" />
+
+            <div class="row" data-sticky-container>
+              <div class="col-12 col-lg-9">
+                <div class="wisiwyg" id="contentProgresssionRead">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                  laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                  irure dolor in reprehenderit in voluptate velit esse cillum
+                  dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                  cupidatat non proident, sunt in culpa qui officia deserunt
+                  mollit anim id est laborum.
+                </div>
+
+                <div class="mt-3 mb-5"><em>- Kevo42 -</em></div>
+              </div>
+
+              <div class="col-12 col-lg-3">
+                <div class="sticky" data-sticky-for="992" data-margin-top="81">
+                  <aside id="blockLinks" class="blockOthers mt-0">
+                    <h3 class="title h4">Liens utiles</h3>
+                    <div class="wisiwyg small font-base"></div>
+                  </aside>
+
+                  <aside id="blockVideos" class="blockOthers">
+                    <h3 class="title h4">Vidéos</h3>
+                    <div class="row">
+                      <div class="col-6 col-sm-6 col-md-4 col-lg-12">
+                        <div class="blockVideo">
+                          <a
+                            class="item first"
+                            data-fancybox
+                            href="#video_169"
+                            title="Achetez un truc de chez Jim ! : extrait vidéos du film Pumping Iron 2"
+                          >
+                            <figure>
+                              <figcaption>
+                                <span class="title"
+                                  >Achetez un truc de chez Jim !</span
+                                >
+                              </figcaption>
+                              <img
+                                src="https://www.nanarland.com/media/cache/resolve/front_film_single_video_poster/uploads/videos/5e8b5747399b8-pumping-iron-2-jim-beam.jpg"
+                                alt="Achetez un truc de chez Jim ! : extrait vidéos du film Pumping Iron 2"
+                                title="Achetez un truc de chez Jim ! : extrait vidéos du film Pumping Iron 2"
+                              />
+                            </figure>
+                          </a>
+
+                          <div class="ratingStars" data-avg="4.5660964230171">
+                            <span class="mask">
+                              <i class="las la-star" aria-hidden="true"></i>
+                              <i class="las la-star" aria-hidden="true"></i>
+                              <i class="las la-star" aria-hidden="true"></i>
+                              <i class="las la-star" aria-hidden="true"></i>
+                              <i class="las la-star" aria-hidden="true"></i>
+                            </span>
+                            <span class="visibleStars">
+                              <i class="las la-star" aria-hidden="true"></i>
+                              <i class="las la-star" aria-hidden="true"></i>
+                              <i class="las la-star" aria-hidden="true"></i>
+                              <i class="las la-star" aria-hidden="true"></i>
+                              <i
+                                class="las la-star-half-alt"
+                                aria-hidden="true"
+                              ></i>
+                            </span>
+                          </div>
+                          <video
+                            id="video_169"
+                            controls
+                            poster="https://www.nanarland.com/media/cache/resolve/front_film_single_video_poster/uploads/videos/5e8b5747399b8-pumping-iron-2-jim-beam.jpg"
+                            data-statview="true"
+                            data-staturl="/stat/video/visionnage/add/video/n6ffi5u8670kjtl"
+                          >
+                            <source
+                              src="/uploads/videos/5e8b57476e149-pumping-iron-2-jim-beam.flv.webm"
+                              type="video/webm"
+                            />
+                            <source
+                              src="/uploads/videos/5e8b57473c51f-pumping-iron-2-jim-beam.flv.mp4"
+                              type="video/mp4"
+                            />
+                          </video>
+                        </div>
+                      </div>
+                      <div class="col-6 col-sm-6 col-md-4 col-lg-12">
+                        <div class="blockVideo">
+                          <a
+                            class="item"
+                            data-fancybox
+                            href="#video_170"
+                            title="La recherche qui anime le goéland : extrait vidéos du film Pumping Iron 2"
+                          >
+                            <figure>
+                              <figcaption>
+                                <span class="title"
+                                  >La recherche qui anime le goéland</span
+                                >
+                              </figcaption>
+                              <img
+                                src="https://www.nanarland.com/media/cache/resolve/front_film_single_video_poster/uploads/videos/5e8b5747c6fbd-pumping-iron-2-goeland.jpg"
+                                alt="La recherche qui anime le goéland : extrait vidéos du film Pumping Iron 2"
+                                title="La recherche qui anime le goéland : extrait vidéos du film Pumping Iron 2"
+                              />
+                            </figure>
+                          </a>
+
+                          <div class="ratingStars" data-avg="4.4708171206226">
+                            <span class="mask">
+                              <i class="las la-star" aria-hidden="true"></i>
+                              <i class="las la-star" aria-hidden="true"></i>
+                              <i class="las la-star" aria-hidden="true"></i>
+                              <i class="las la-star" aria-hidden="true"></i>
+                              <i class="las la-star" aria-hidden="true"></i>
+                            </span>
+                            <span class="visibleStars">
+                              <i class="las la-star" aria-hidden="true"></i>
+                              <i class="las la-star" aria-hidden="true"></i>
+                              <i class="las la-star" aria-hidden="true"></i>
+                              <i class="las la-star" aria-hidden="true"></i>
+                              <i
+                                class="las la-star-half-alt"
+                                aria-hidden="true"
+                              ></i>
+                            </span>
+                          </div>
+                          <video
+                            id="video_170"
+                            controls
+                            poster="https://www.nanarland.com/media/cache/resolve/front_film_single_video_poster/uploads/videos/5e8b5747c6fbd-pumping-iron-2-goeland.jpg"
+                            data-statview="true"
+                            data-staturl="/stat/video/visionnage/add/video/7nhkomew2gu7gsp"
+                          >
+                            <source
+                              src="/uploads/videos/5e8b5747e6f1d-pumping-iron-2-goeland.flv.webm"
+                              type="video/webm"
+                            />
+                            <source
+                              src="/uploads/videos/5e8b5747cd5bd-pumping-iron-2-goeland.flv.mp4"
+                              type="video/mp4"
+                            />
+                          </video>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="text-right mt-3">
+                      <a href="/videos" class="withIconAngle text-body small"
+                        >Toutes les vidéos</a
+                      >
+                    </div>
+                  </aside>
+
+                  <aside id="blockEscales" class="blockOthers">
+                    <h3 class="title h4">Escale à NNL</h3>
+                    <div class="row">
+                      <div class="col-6 col-sm-6 col-md-4 col-lg-12">
+                        <a
+                          class="item first"
+                          href="/escales-a-nanarland/numero-31.html"
+                          title="Escale à Nanarland numéro 31 avec Allociné"
+                        >
+                          <figure>
+                            <figcaption>
+                              <span class="title"
+                                >Escale à Nanarland N°31 - Vendredi 18 novembre
+                                2011</span
+                              >
+                            </figcaption>
+                            <img
+                              src="https://www.nanarland.com/media/cache/resolve/front_film_single_escales_poster/uploads/escales/5e8b580ec9e7d-escale-a-nanarland-n031-vendredi-18-novembre-2011.jpg"
+                              alt="Escale à Nanarland numéro 31 avec Allociné"
+                              title="Escale à Nanarland numéro 31 avec Allociné"
+                            />
+                          </figure>
+                        </a>
+                      </div>
+                    </div>
+                    <div class="text-right mt-3">
+                      <a
+                        href="/escales-a-nanarland"
+                        class="withIconAngle text-body small"
+                        >Toutes les Escales</a
+                      >
+                    </div>
+                  </aside>
+                </div>
+              </div>
+            </div>
+
+            <div id="notes" class="mt-2">
+              <div
+                class="d-inline-block bg-primary text-white font-weight-bold py-3 px-4 mb-1"
+              >
+                Moyenne : <span class="h4 m-0">3.50</span>&nbsp;<sub>/ 5</sub>
+              </div>
+              <div class="row">
+                <div class="col-12 col-sm-4 col-md-3 col-lg-3">
+                  <div class="rating-user">
+                    <figure class="user">
+                      <i title="Kevo42" class="user-avatar avatar-default"></i>
+                      <figcaption class="pseudo">Kevo42</figcaption>
+                    </figure>
+                    <div class="rate">
+                      <div>NOTE</div>
+                      <div class="data">
+                        <span class="authorRate">2.5</span> <sub>/ 5</sub>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4 col-md-3 col-lg-3">
+                  <div class="rating-user">
+                    <figure class="user">
+                      <img
+                        src="https://www.nanarland.com/media/cache/resolve/front_user_picture_type_1/uploads/users/5fb815cbedce1-they-live-4k-uhd-2020-1.jpg"
+                        title="John Nada"
+                        class="user-avatar"
+                        loading="lazy"
+                      />
+                      <figcaption class="pseudo">John Nada</figcaption>
+                    </figure>
+                    <div class="rate">
+                      <div>NOTE</div>
+                      <div class="data">
+                        <span class="authorRate">3.75</span> <sub>/ 5</sub>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4 col-md-3 col-lg-3">
+                  <div class="rating-user">
+                    <figure class="user">
+                      <img
+                        src="https://www.nanarland.com/media/cache/resolve/front_user_picture_type_1/uploads/users/608193ed43147-avatar-2.jpg"
+                        title="Kobal"
+                        class="user-avatar"
+                        loading="lazy"
+                      />
+                      <figcaption class="pseudo">Kobal</figcaption>
+                    </figure>
+                    <div class="rate">
+                      <div>NOTE</div>
+                      <div class="data">
+                        <span class="authorRate">3.25</span> <sub>/ 5</sub>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-4 col-md-3 col-lg-3">
+                  <div class="rating-user">
+                    <figure class="user">
+                      <img
+                        src="https://www.nanarland.com/media/cache/resolve/front_user_picture_type_1/uploads/users/602feaf92ecb5-avatar-drexl-nanarland-new.jpg"
+                        title="Drexl"
+                        class="user-avatar"
+                        loading="lazy"
+                      />
+                      <figcaption class="pseudo">Drexl</figcaption>
+                    </figure>
+                    <div class="rate">
+                      <div>NOTE</div>
+                      <div class="data">
+                        <span class="authorRate">4.5</span> <sub>/ 5</sub>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <section id="cote-rarete" class="blockOthers mt-0">
+              <h3 class="title h4">Cote de rareté - 2/ Trouvable</h3>
+              <a
+                href="/divers/cote-de-rarete.html"
+                class="text-body font-weight-bold withIconAngle"
+                title="Cote de rareté"
+                >Barème de notation</a
+              >
+              <div class="wisiwyg mt-4">
+                « Pumping Iron 2 » a fait l’objet d’une rarissime édition VHS
+                sortie à l'époque chez Proserpine, et que le pseudo éditeur
+                Prism s’est contenté de repiquer en DVD pour la proposer à très
+                bas prix dans les grandes surfaces. Comme à leur habitude, les
+                pirates de Prism proposent donc une vilaine édition baveuse au
+                format 4/3, avec une bande-son soit disant "dolby digital" (et
+                en fait repiquée sur la VHS de Proserpine en mono avec un max de
+                souffle) et une jaquette nous montrant Arnold période «
+                <a
+                  href="/chroniques/aux-portes-du-nanar/au-dela-du-nanar/commando.html"
+                  title="Commando - la chronique de Nanarland"
+                  target="_blank"
+                  rel="noopener"
+                  class="autoDetect"
+                  >Commando</a
+                >
+                ». D'après l'IMDB, « The Comeback » dure 78 mn, alors que
+                l'édition DVD de Prism ne fait que 45 mn. Que sont devenues ces
+                33 mn manquantes ? Figuraient-elles seulement sur l'édition VHS
+                de chez Proserpine ? Pour l'heure, nous ne pouvons que nous
+                perdre en conjectures.<br />
+                <p align="center">
+                  <img
+                    src="/uploads/content/chroniques/pumping-iron-2/comeback.jpg"
+                  />
+                </p>
+                <br />
+                <p align="center">
+                  <img
+                    src="/uploads/content/chroniques/pumping-iron-2/dvd-prism.jpg"
+                  />
+                </p>
+                <br />Signalons qu'il existe un DVD « Pumping Iron 2 : the Women
+                » aux Etats-Unis, "vraie" suite semble t-il inédite chez nous de
+                « Pumping Iron », et que « The Comeback » semble lui être dispo
+                en DVD en Australie chez "VEI".<br />
+                <p align="center">
+                  <img
+                    src="/uploads/content/chroniques/pumping-iron-2/pumping-iron-2-the-women.jpg"
+                  />
+                </p>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <div class="progress progression-read">
+        <div
+          class="progress-bar"
+          role="progressbar"
+          aria-valuenow="0"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        ></div>
+      </div>
+    </main>
+
+    <div class="move-when-foreground">
+      <div class="my-3">
+        <nav aria-label="breadcrumb" class="container">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item home">
+              <a href="/" title="Page d'accueil"
+                ><i class="las la-home" aria-hidden="true"></i
+              ></a>
+            </li>
+            <li class="breadcrumb-item">
+              <a
+                href="/chroniques"
+                title="Nos chroniques de films, classées par catégories"
+                >Films</a
+              >
+            </li>
+            <li class="breadcrumb-item">
+              <a
+                href="/chroniques/aux-portes-du-nanar"
+                title="Aux portes du nanar"
+                >Aux portes du nanar</a
+              >
+            </li>
+            <li class="breadcrumb-item">
+              <a
+                href="/chroniques/aux-portes-du-nanar/au-dela-du-nanar"
+                title="Au-delà du nanar"
+                >Au-delà du nanar</a
+              >
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+              Pumping Iron 2
+            </li>
+          </ol>
+        </nav>
+      </div>
+
+      <footer id="footer">
+        <div class="container">
+          <div class="row">
+            <div class="col-12 col-md-4 order-1 order-md-0">
+              <div class="aPropos">
+                <h6>A PROPOS</h6>
+                <p class="m-0">
+                  Depuis 2001, l’équipe de Nanarland partage sa passion des
+                  mauvais films sympathiques à travers son site Internet, des
+                  émissions et web-séries documentaires, éditions DVD, livres,
+                  podcasts et projections de films.
+                </p>
+              </div>
+            </div>
+            <div class="col-12 col-md-8 blockLinks">
+              <nav>
+                <a
+                  class="active"
+                  href="/chroniques"
+                  title="Nos chroniques de films, classées par catégories"
+                  >Films</a
+                >
+                <a
+                  class=""
+                  href="/on-s-est-fait-avoir"
+                  title="On s&#039;est fait avoir"
+                  >On s&#039;est fait avoir</a
+                >
+                <a
+                  class=""
+                  href="/personnalites"
+                  title="Nos biographies d&#039;acteurs et réalisateurs"
+                  >Personnalités</a
+                >
+                <a class="" href="/videos" title="Nos extraits de films"
+                  >Extraits vidéo</a
+                >
+                <a
+                  class=""
+                  href="/nanaroscope"
+                  title="Nanaroscope, avec Arte Creative"
+                  >Nanaroscope</a
+                >
+                <a class="" href="/glossaire" title="Le glossaire de Nanarland"
+                  >Glossaire</a
+                >
+                <a
+                  class=""
+                  href="/interviews"
+                  title="Les interviews de Nanarland"
+                  >Interviews</a
+                >
+                <a class="" href="/blog" title="Blog">Blog</a>
+                <a class="" href="/podcast-radio" title="Podcast &amp; Radio"
+                  >Podcast &amp; Radio</a
+                >
+                <a class="" href="/bibliographie" title="Bibliographie"
+                  >Bibliographie</a
+                >
+                <a
+                  class=""
+                  href="/escales-a-nanarland"
+                  title="Escales à Nanarland avec Allociné"
+                  >Escale à Nanarland</a
+                >
+                <a
+                  href="https://forum.nanarland.com/"
+                  title="Le Forum de Nanarland"
+                  target="_blank"
+                  rel="noopener"
+                  >Forum</a
+                >
+                <a class="" href="/contacts" title="Contacts">Contacts</a>
+                <a
+                  class=""
+                  href="/divers/mentions-legales-et-credits.html"
+                  title="Mentions légales &amp; Crédits"
+                  >Mentions légales &amp; Crédits</a
+                >
+              </nav>
+              <ul class="socialLinks">
+                <li>
+                  <a
+                    href="https://www.facebook.com/nanarland/"
+                    target="_blank"
+                    rel="noopener"
+                    title="Nanarland sur Facebook"
+                    ><i class="lab la-facebook-square" aria-hidden="true"></i
+                  ></a>
+                </li>
+                <li>
+                  <a
+                    href="https://twitter.com/nanarland/"
+                    target="_blank"
+                    rel="noopener"
+                    title="Nanarland sur Twitter"
+                    ><i class="lab la-twitter" aria-hidden="true"></i
+                  ></a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.instagram.com/nanarland_officiel/"
+                    target="_blank"
+                    rel="noopener"
+                    title="Nanarland sur Instagram"
+                    ><i class="lab la-instagram" aria-hidden="true"></i
+                  ></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="blockCredits text-right small mt-4">
+            Réalisé par
+            <a
+              href="https://coingt.dev"
+              target="_blank"
+              rel="noopener"
+              title="Mathieu Coingt - Développeur web freelance"
+              >Mathieu Coingt - Développeur web freelance</a
+            >
+          </div>
+        </div>
+      </footer>
+    </div>
+    <button class="back-to-top" type="button" aria-hidden="true">
+      <i class="las la-angle-double-up" aria-hidden="true"></i>
+    </button>
+
+    <div id="cookie-consent">
+      <div class="content">
+        <button type="button" data-action="open" title="Gestion des cookies">
+          <i class="las la-cookie-bite" aria-hidden="true"></i>
+        </button>
+        <div class="text">
+          <p>
+            Ce site web utilise des cookies, uniquement à des fins
+            statistiques.<br />Ils nous permettent de connaître la fréquentation
+            de notre site web, et les contenus qui vous intéressent.
+          </p>
+          <p class="text-right">
+            <a href="/divers/mentions-legales-et-credits.html"
+              >Plus d'infos <i class="las la-angle-right" aria-hidden="true"></i
+            ></a>
+          </p>
+        </div>
+
+        <div class="buttons">
+          <button
+            type="button"
+            class="btn btn-sm btn-success text-uppercase"
+            data-action="accept"
+            title="J'accepte"
+          >
+            <i class="las la-check" aria-hidden="true"></i> J'accepte
+          </button>
+          <button
+            type="button"
+            class="btn btn-sm btn-danger text-uppercase"
+            data-action="decline"
+            title="Je refuse"
+          >
+            <i class="las la-times" aria-hidden="true"></i> Je refuse
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsDate,
   IsDecimal,
   IsEnum,
   IsInt,
@@ -37,6 +38,55 @@ export class GenreDto {
   @IsUrl()
   @IsNotEmpty()
   link: string;
+}
+
+export class CutVideoDto {
+  @IsInt()
+  @IsNotEmpty()
+  id: number;
+
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @IsDecimal()
+  @IsNotEmpty()
+  averageRating: number;
+
+  @IsArray()
+  @IsNotEmpty()
+  links: {
+    src: string;
+    type: string;
+  }[];
+}
+
+export class EscaleANanarlandVideoDto {
+  @IsInt()
+  @IsNotEmpty()
+  id: number;
+
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @IsUrl()
+  @IsNotEmpty()
+  pageLink: string;
+
+  @IsDate()
+  @IsNotEmpty()
+  publicationDate: Date;
+}
+
+export class NanaroscopeVideoDto {
+  @IsString()
+  @IsNotEmpty()
+  seasonEpisodeCode: string;
+
+  @IsString()
+  @IsNotEmpty()
+  tagline: string;
 }
 
 export class ChronicleDto {
@@ -96,6 +146,15 @@ export class ChronicleDto {
   @IsInt()
   @IsOptional()
   runtime: number;
+
+  @IsArray()
+  cutVideos: CutVideoDto[];
+
+  @IsArray()
+  escaleANanarlandVideos: EscaleANanarlandVideoDto[];
+
+  @IsArray()
+  nanaroscopeVideos: NanaroscopeVideoDto[];
 
   @IsUrl()
   @IsOptional()

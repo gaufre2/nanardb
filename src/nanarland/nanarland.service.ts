@@ -6,8 +6,17 @@ import {
 import { Page } from 'puppeteer';
 import { RarityRanting } from 'src/common/dto';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
-import { ChronicleDto, GenreDto, UserRatingDto } from './dto';
+import {
+  ChronicleDto,
+  CutVideoDto,
+  EscaleANanarlandVideoDto,
+  GenreDto,
+  NanaroscopeVideoDto,
+  UserRatingDto,
+} from './dto';
 import { ConfigService } from '@nestjs/config';
+import { parse as parseDate } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 @Injectable()
 /**
@@ -241,14 +250,15 @@ export class NanarlandService {
         selector,
         (el: HTMLEmbedElement) => el.innerText,
       );
-      const link = await page.$eval(selector, (el: HTMLEmbedElement) =>
+      const href = await page.$eval(selector, (el: HTMLEmbedElement) =>
         el.getAttribute('href'),
       );
-      if (!link) {
+      if (!href) {
         throw new InternalServerErrorException(
           `Genre link not found (${page.url()})`,
         );
       }
+      const link = this.BASE_URL + href;
       const genre: GenreDto = { name: name, link: link };
       return genre;
     } catch (error) {
@@ -337,41 +347,53 @@ export class NanarlandService {
    * @throws InternalServerErrorException if any required user rating data is missing.
    */
   private async getUserRatings(page: Page): Promise<UserRatingDto[]> {
-    try {
-      const userRatingMapped = await page.evaluate(() => {
-        const userRatings = Array.from(
-          document.querySelectorAll('#notes .rating-user'),
-        );
-        return userRatings.map((userRating) => {
-          const username =
-            userRating.querySelector('figure figcaption')?.textContent;
-          const avatarLink = userRating
-            .querySelector('figure img')
-            ?.getAttribute('src');
-          const rating =
-            userRating.querySelector('.data .authorRate')?.textContent;
-
-          if (!username || !avatarLink || !rating) {
-            throw new InternalServerErrorException(
-              `Invalid user rating data (${page.url()}): username=${username}, avatarLink=${avatarLink}, rating=${rating}`,
-            );
-          }
-
-          return {
-            user: {
-              name: username,
-              avatarLink: avatarLink,
-            },
-            rating: parseFloat(rating),
-          };
-        });
-      });
-      return userRatingMapped;
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `User rating not found (${page.url()}), error: ${error}`,
+    const rawUserRatings = await page.evaluate(() => {
+      const notes = Array.from(
+        document.querySelectorAll('#notes .rating-user'),
       );
-    }
+      return notes.map((note) => {
+        const name = note.querySelector('figure figcaption')?.textContent;
+        const avatarLink = note
+          .querySelector('figure img')
+          ?.getAttribute('src');
+        const ratingString =
+          note.querySelector('.data .authorRate')?.textContent;
+
+        return {
+          user: {
+            name,
+            avatarLink,
+          },
+          ratingString,
+        };
+      });
+    });
+
+    const userRatings = rawUserRatings.map((rawUserRating) => {
+      if (
+        !rawUserRating.user.name ||
+        !rawUserRating.user.avatarLink ||
+        !rawUserRating.ratingString
+      ) {
+        throw new InternalServerErrorException(
+          `Invalid user rating data:\n` +
+            `  - user.name=${rawUserRating.user.name}\n` +
+            `  - user.avatarLink=${rawUserRating.user.avatarLink}\n` +
+            `  - rating=${rawUserRating.ratingString}`,
+        );
+      }
+      const user = {
+        name: rawUserRating.user.name,
+        avatarLink: rawUserRating.user.avatarLink,
+      };
+      const rating = parseFloat(rawUserRating.ratingString);
+
+      return {
+        user,
+        rating,
+      };
+    });
+    return userRatings;
   }
 
   /**
@@ -446,6 +468,215 @@ export class NanarlandService {
   private getRuntime(infos: string[]): number {
     const runtimeText = this.getInfoTextByKey('Durée', infos);
     return this.convertToMinutes(runtimeText);
+  }
+
+  /**
+   * Retrieves and processes a list of cut videos from the chronicle page.
+   *
+   * @param page - The Puppeteer Page object.
+   * @returns A promise that resolves to an array of `CutVideoDto` containing video detail.
+   * @throws InternalServerErrorException if any required video data is invalid.
+   */
+  private async getCutVideos(page: Page): Promise<CutVideoDto[]> {
+    const rawVideos = await page.evaluate(() => {
+      const blockVideos = Array.from(
+        document.querySelectorAll('#blockVideos .blockVideo'),
+      );
+      return blockVideos.map((blockVideo) => {
+        const id = blockVideo
+          .querySelector('video')
+          ?.getAttribute('id')
+          ?.match(/\d*$/)?.[0];
+        const title = blockVideo.querySelector('.title')?.textContent;
+        const averageRating = blockVideo
+          .querySelector('.ratingStars')
+          ?.getAttribute('data-avg');
+        const sources = Array.from(blockVideo.querySelectorAll('video source'));
+        const links = sources.map((source) => ({
+          href: source.getAttribute('src'),
+          type: source.getAttribute('type'),
+        }));
+
+        return {
+          id,
+          title,
+          averageRating,
+          links,
+        };
+      });
+    });
+
+    const videos = rawVideos.map((rawVideo) => {
+      if (
+        !rawVideo.id ||
+        !rawVideo.title ||
+        !rawVideo.averageRating ||
+        !rawVideo.links.length ||
+        rawVideo.links.map((link) => {
+          return !link.href || !link.type;
+        })
+      ) {
+        throw new InternalServerErrorException(
+          `Invalid cut video data (${page.url()}):\n` +
+            `  - id=${rawVideo.id}\n` +
+            `  - title=${rawVideo.title}\n` +
+            `  - averageRating=${rawVideo.averageRating}\n` +
+            `  - links=${JSON.stringify(rawVideo.links)}`,
+        );
+      }
+      const id = parseInt(rawVideo.id);
+      const title = rawVideo.title;
+      const averageRating = parseFloat(rawVideo.averageRating);
+      const links = rawVideo.links.map((link) => ({
+        src: this.BASE_URL + link.href,
+        type: link.type || 'undefined',
+      }));
+
+      return {
+        id,
+        title,
+        averageRating,
+        links,
+      };
+    });
+
+    return videos;
+  }
+
+  /**
+   * Retrieves and processes a list of "Escale à Nanarland" videos from the chronicle page.
+   *
+   * @param page - The Puppeteer Page object.
+   * @returns A promise that resolves to an array of `EscaleANanarlandVideoDto` containing video detail.
+   * @throws InternalServerErrorException if any required video data is invalid.
+   */
+  private async getEscaleANanarlandVideos(
+    page: Page,
+  ): Promise<EscaleANanarlandVideoDto[]> {
+    const rawVideos = await page.evaluate(() => {
+      const rows = Array.from(document.querySelectorAll('#blockEscales .row'));
+      return rows.map((row) => {
+        const spanTitle = row.querySelector('span')?.innerText;
+        const href = row.querySelector('a')?.getAttribute('href');
+
+        return {
+          spanTitle,
+          href,
+        };
+      });
+    });
+
+    const videos = rawVideos.map((rawVideo) => {
+      const idMatch = rawVideo.spanTitle?.match(/N°(\d+)/);
+      const id = idMatch ? idMatch[1] : null;
+
+      const titleMatch = rawVideo.spanTitle?.match(/^(.*?)(?=\s*-\s*)/);
+      const title = titleMatch ? titleMatch[1].trim() : null;
+
+      const dateMatch = rawVideo.spanTitle?.match(/-\s*(.+)/);
+      const dateFrenchString = dateMatch ? dateMatch[1].trim() : null;
+
+      const href = rawVideo.href;
+
+      if (!id || !title || !dateFrenchString || !href) {
+        throw new InternalServerErrorException(
+          `Invalid escale video data (${page.url()}):\n` +
+            `  - spanTitle=${rawVideo.spanTitle}\n` +
+            `  - id=${id}\n` +
+            `  - title=${title}\n` +
+            `  - dateFrenchString=${dateFrenchString}\n` +
+            `  - href=${href}\n`,
+        );
+      }
+      const date = parseDate(
+        dateFrenchString,
+        'EEEE dd MMMM yyyy',
+        new Date(),
+        { locale: fr },
+      );
+
+      return {
+        id: parseInt(id),
+        title: title,
+        pageLink: this.BASE_URL + href,
+        publicationDate: date,
+      };
+    });
+
+    return videos;
+  }
+
+  /**
+   * Retrieves and processes a list of "Nanaroscope" videos from the chronicle page.
+   *
+   * @param page - The Puppeteer Page object.
+   * @returns A promise that resolves to an array of `NanaroscopeVideoDto` containing video detail.
+   * @throws InternalServerErrorException if any required video data is invalid.
+   */
+  private async getNanaroscopeVideos(
+    page: Page,
+  ): Promise<NanaroscopeVideoDto[]> {
+    function extractSeasonEpisodeFromAElement(aTitle: string): string {
+      const match = aTitle.match(/Saison\s+(\d+)\s+Episode\s+(\d+)/i);
+
+      if (match) {
+        const season = match[1].padStart(2, '0');
+        const episode = match[2].padStart(2, '0');
+        return `S${season}E${episode}`;
+      } else {
+        throw new Error(
+          `Impossible to extract season episode code (SxxExx): aTitle=${aTitle}`,
+        );
+      }
+    }
+    function extractTaglineFromSpanElement(spanTitle: string): string {
+      const match = spanTitle.match(/.*:\s*(.+)/);
+
+      if (match) {
+        return match[1].trim();
+      } else {
+        throw new Error(
+          `Impossible to extract episode tagline: spanTitle=${spanTitle}`,
+        );
+      }
+    }
+
+    const rawVideos = await page.evaluate(() => {
+      const blockVideos = Array.from(
+        document.querySelectorAll('#blockNanaroscopes .blockVideo'),
+      );
+
+      return blockVideos.map((blockVideo) => {
+        const aTitle = blockVideo.querySelector('a')?.getAttribute('title');
+        const spanTitle = blockVideo.querySelector('span')?.innerText;
+
+        return {
+          aTitle: aTitle,
+          spanTitle: spanTitle,
+        };
+      });
+    });
+
+    const videos = rawVideos.map((rawVideo) => {
+      if (!rawVideo.aTitle || !rawVideo.spanTitle) {
+        throw new InternalServerErrorException(
+          `Invalid Nanaroscope video data (${page.url()}):\n` +
+            `  - aTitle=${rawVideo.aTitle}\n` +
+            `  - spanTitle=${rawVideo.spanTitle}`,
+        );
+      }
+      const seasonEpisodeCode = extractSeasonEpisodeFromAElement(
+        rawVideo.aTitle,
+      );
+      const tagline = extractTaglineFromSpanElement(rawVideo.spanTitle);
+
+      return {
+        seasonEpisodeCode,
+        tagline,
+      };
+    });
+
+    return videos;
   }
 
   /**
@@ -580,6 +811,10 @@ export class NanarlandService {
     chronicle.releaseYear = this.getReleaseYear(infos);
     chronicle.originCountries = this.getOriginCountries(infos);
     chronicle.runtime = this.getRuntime(infos);
+    chronicle.cutVideos = await this.getCutVideos(page);
+    chronicle.escaleANanarlandVideos =
+      await this.getEscaleANanarlandVideos(page);
+    chronicle.nanaroscopeVideos = await this.getNanaroscopeVideos(page);
     chronicle.posterLink = await this.getPoster(page);
 
     await page.close();

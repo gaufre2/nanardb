@@ -72,6 +72,34 @@ model ChronicleRating {
   @@id([chronicleId, userId])
 }
 
+model CutVideo {
+  id Int @id
+
+  title         String
+  averageRating Decimal
+  links         Json
+
+  Chronicles Chronicle[]
+}
+
+model EscaleANanarlandVideo {
+  id Int @id
+
+  title           String
+  pageLink        String
+  publicationDate DateTime
+
+  Chronicles Chronicle[]
+}
+
+model NanaroscopeVideo {
+  seasonEpisodeId String @id
+
+  title String
+
+  Chronicles Chronicle[]
+}
+
 model Chronicle {
   id        Int      @id @default(autoincrement())
   addedAt   DateTime @default(now())
@@ -83,15 +111,14 @@ model Chronicle {
   author   User   @relation(fields: [authorId], references: [id])
   authorId String
 
-  ratings ChronicleRating[]
+  ratings       ChronicleRating[]
   averageRating Decimal
   rarityRating  RarityRating?
 
-  genre      Genre    @relation(fields: [genreId], references: [id])
-  genreId    Int
-  subGenre   SubGenre @relation(fields: [subGenreId], references: [id])
-  subGenreId Int
-
+  genre             Genre    @relation(fields: [genreId], references: [id])
+  genreId           Int
+  subGenre          SubGenre @relation(fields: [subGenreId], references: [id])
+  subGenreId        Int
   mainTitle         String   @unique
   originalTitle     String?
   alternativeTitles String[]
@@ -99,6 +126,10 @@ model Chronicle {
   releaseYear       Int?
   originCountries   String[]
   runtime           Int?
+
+  cutVideos              CutVideo[]
+  escaleANanarlandVideos EscaleANanarlandVideo[]
+  nanaroscopeVideos      NanaroscopeVideo[]
 
   poster     Bytes?
   posterFile String?

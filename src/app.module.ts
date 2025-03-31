@@ -7,6 +7,7 @@ import { join } from 'path';
 import { ConfigModule } from '@nestjs/config';
 import { TmdbModule } from './tmdb/tmdb.module';
 import { RedisModule } from './redis/redis.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { RedisModule } from './redis/redis.module';
     }),
     TmdbModule,
     RedisModule,
+    PrismaModule,
   ],
 })
 export class AppModule {}

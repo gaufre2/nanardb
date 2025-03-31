@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TmdbModule } from './tmdb/tmdb.module';
 import { RedisModule } from './redis/redis.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PrismaModule } from './prisma/prisma.module';
     TmdbModule,
     RedisModule,
     PrismaModule,
+    CommonModule,
   ],
 })
 export class AppModule {}

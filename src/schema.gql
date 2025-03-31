@@ -2,9 +2,25 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type User {
+  id: String!
+  username: String!
+}
+
 type Query {
   chroniclesHrefs(ignoreCache: Boolean!): [String!]!
   chronicleData(href: String!, ignoreCache: Boolean!): String!
   movieId(query: String!, year: Float): Float!
   movieData(movieId: Float!, ignoreCache: Boolean!, language: String): String!
+  user(where: UserInput!): User
+}
+
+input UserInput {
+  id: String
+  username: String
+}
+
+type Mutation {
+  createUser(username: String!, avatarLink: String!): User!
+  deleteUser(where: UserInput!): User!
 }

@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TmdbModule } from './tmdb/tmdb.module';
 import { RedisModule } from './redis/redis.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { UserModule } from './user/user.module';
 import { CommonModule } from './common/common.module';
 
 @Module({
@@ -25,6 +26,7 @@ import { CommonModule } from './common/common.module';
     TmdbModule,
     RedisModule,
     PrismaModule,
+    UserModule,
     CommonModule,
   ],
 })

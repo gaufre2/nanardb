@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as puppeteer from 'puppeteer';
-import { RedisService } from 'src/redis/redis.service';
+import { RedisService } from 'src/common/services';
 
 @Injectable()
 export class PuppeteerService implements OnApplicationShutdown {

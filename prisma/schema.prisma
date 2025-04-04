@@ -31,13 +31,13 @@ model Genre {
   title String @unique
   link  String @unique
 
-  subGenreIds SubGenre[]
+  subgenreIds Subgenre[]
   Chronicles  Chronicle[]
 
   @@map("genres")
 }
 
-model SubGenre {
+model Subgenre {
   id Int @id @default(autoincrement())
 
   title   String @unique
@@ -47,7 +47,7 @@ model SubGenre {
 
   Chronicles Chronicle[]
 
-  @@map("subGenres")
+  @@map("subgenres")
 }
 
 enum RarityRating {
@@ -117,8 +117,8 @@ model Chronicle {
 
   genre             Genre    @relation(fields: [genreId], references: [id])
   genreId           Int
-  subGenre          SubGenre @relation(fields: [subGenreId], references: [id])
-  subGenreId        Int
+  subgenre          Subgenre @relation(fields: [subgenreId], references: [id])
+  subgenreId        Int
   mainTitle         String   @unique
   originalTitle     String?
   alternativeTitles String[]

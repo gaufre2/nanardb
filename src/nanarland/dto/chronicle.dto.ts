@@ -1,4 +1,5 @@
 import { RarityRanting } from 'src/common/dto';
+import { CreateGenreInput } from 'src/genres/dto';
 
 export class UserDto {
   name: string;
@@ -11,7 +12,7 @@ export class UserRatingDto {
 }
 
 export class GenreDto {
-  name: string;
+  title: string;
   link: string;
 }
 
@@ -44,8 +45,8 @@ export class ChronicleDto {
   userRatings: UserRatingDto[];
   averageRating: number;
   rarityRating: RarityRanting;
-  genre: GenreDto;
-  subGenre: GenreDto;
+  genre: CreateGenreInput;
+  subgenre: CreateGenreInput;
   mainTitle: string;
   originalTitle?: string;
   alternativeTitles?: string[];

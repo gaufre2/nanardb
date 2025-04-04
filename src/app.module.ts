@@ -10,6 +10,7 @@ import { RedisModule } from './redis/redis.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UserModule } from './user/user.module';
 import { CommonModule } from './common/common.module';
+import { GenresModule } from './genres/genres.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { CommonModule } from './common/common.module';
     PrismaModule,
     UserModule,
     CommonModule,
+    GenresModule,
   ],
 })
 export class AppModule {}

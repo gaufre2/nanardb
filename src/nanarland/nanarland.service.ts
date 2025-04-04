@@ -286,12 +286,12 @@ export class NanarlandService {
      * @returns A promise that resolves to a GenreDto containing the genre details.
      * @throws InternalServerErrorException if the genre information is not found.
      */
-    async function getGenreOrSubGenre(
+    async function getGenreOrSubgenre(
       page: Page,
       selector: string,
     ): Promise<GenreDto> {
       try {
-        const name = await page.$eval(
+        const title = await page.$eval(
           selector,
           (el: HTMLEmbedElement) => el.innerText,
         );
@@ -303,8 +303,8 @@ export class NanarlandService {
             `Genre link not found (${chronicleLink})`,
           );
         }
-        const genreLink = BASE_URL + href;
-        const genre: GenreDto = { name: name, link: genreLink };
+        const link = BASE_URL + href;
+        const genre: GenreDto = { title, link };
         return genre;
       } catch (error) {
         throw new InternalServerErrorException(
@@ -323,7 +323,7 @@ export class NanarlandService {
       const selector =
         'body > main > div.mainInner > nav > ol > li:nth-child(3) > a';
 
-      return getGenreOrSubGenre(page, selector);
+      return getGenreOrSubgenre(page, selector);
     }
 
     /**
@@ -332,11 +332,11 @@ export class NanarlandService {
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to a GenreDto with sub-genre details.
      */
-    async function getSubGenre(page: Page): Promise<GenreDto> {
+    async function getSubgenre(page: Page): Promise<GenreDto> {
       const selector =
         'body > main > div.mainInner > nav > ol > li:nth-child(4) > a';
 
-      return getGenreOrSubGenre(page, selector);
+      return getGenreOrSubgenre(page, selector);
     }
 
     /**
@@ -805,7 +805,7 @@ export class NanarlandService {
     chronicle.link = chronicleLink;
     chronicle.mainTitle = await getMainTitle(page);
     chronicle.genre = await getGenre(page);
-    chronicle.subGenre = await getSubGenre(page);
+    chronicle.subgenre = await getSubgenre(page);
     chronicle.createYear = await getCreationYear(page);
     chronicle.authorName = await getAuthorName(page);
     chronicle.userRatings = await getUserRatings(page);

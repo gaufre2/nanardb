@@ -10,6 +10,7 @@ import { UserModule } from './user/user.module';
 import { CommonModule } from './common/common.module';
 import { GenresModule } from './genres/genres.module';
 import { ReviewModule } from './review/review.module';
+import { RatingModule } from './rating/rating.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ReviewModule } from './review/review.module';
     CommonModule,
     GenresModule,
     ReviewModule,
+    RatingModule,
   ],
 })
 export class AppModule {}

@@ -11,6 +11,7 @@ import { CommonModule } from './common/common.module';
 import { GenresModule } from './genres/genres.module';
 import { ReviewModule } from './review/review.module';
 import { RatingModule } from './rating/rating.module';
+import { VideosModule } from './videos/videos.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { RatingModule } from './rating/rating.module';
     GenresModule,
     ReviewModule,
     RatingModule,
+    VideosModule,
   ],
 })
 export class AppModule {}

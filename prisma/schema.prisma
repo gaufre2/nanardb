@@ -70,6 +70,7 @@ model Rating {
   user   User   @relation(fields: [userId], references: [id])
 
   @@id([reviewId, userId])
+  @@map("rarity")
 }
 
 model CutVideo {
@@ -80,9 +81,11 @@ model CutVideo {
   links         Json
 
   reviews Review[]
+
+  @@map("cutVideo")
 }
 
-model EscaleANanarlandVideo {
+model EscaleVideo {
   id Int @id
 
   title           String
@@ -90,6 +93,8 @@ model EscaleANanarlandVideo {
   publicationDate DateTime
 
   reviews Review[]
+
+  @@map("escaleVideo")
 }
 
 model NanaroscopeVideo {
@@ -98,6 +103,8 @@ model NanaroscopeVideo {
   title String
 
   reviews Review[]
+
+  @@map("nanaroscopeVideo")
 }
 
 model Review {
@@ -127,9 +134,9 @@ model Review {
   originCountries   String[]
   runtime           Int?
 
-  cutVideos              CutVideo[]
-  escaleANanarlandVideos EscaleANanarlandVideo[]
-  nanaroscopeVideos      NanaroscopeVideo[]
+  cutVideos         CutVideo[]
+  escaleVideos      EscaleVideo[]
+  nanaroscopeVideos NanaroscopeVideo[]
 
   poster     Bytes?
   posterFile String?

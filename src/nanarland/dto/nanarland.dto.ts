@@ -38,7 +38,7 @@ export class NanaroscopeVideoDto {
   tagline: string;
 }
 
-export class ChronicleDto {
+export class ReviewDto {
   link: string;
   createYear?: number;
   authorName: string;

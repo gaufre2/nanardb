@@ -7,7 +7,7 @@ import { Page } from 'puppeteer';
 import { RarityRanting } from 'src/common/dto';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import {
-  ChronicleDto,
+  ReviewDto,
   CutVideoDto,
   EscaleANanarlandVideoDto,
   GenreDto,
@@ -21,15 +21,15 @@ import { fr } from 'date-fns/locale';
 @Injectable()
 /**
  * The `NanarlandService` class provides methods to scrape and retrieve information from the Nanarland website.
- * It uses Puppeteer to navigate and extract data from the website's chronicle pages.
+ * It uses Puppeteer to navigate and extract data from the website's review pages.
  *
  * @class
- * @classdesc This service is responsible for fetching and processing chronicle data from Nanarland.
+ * @classdesc This service is responsible for fetching and processing review data from Nanarland.
  *
  * @param {PuppeteerService} puppeteerService - The Puppeteer service used for web scraping.
  *
- * @method getChroniclesHrefs - Fetches the hrefs of all chronicles from the Nanarland URL.
- * @method getChronicleData - Retrieves the chronicle details from the given href.
+ * @method getReviewsHrefs - Fetches the hrefs of all reviews from the Nanarland URL.
+ * @method getReviewData - Retrieves the review details from the given href.
  */
 export class NanarlandService {
   constructor(
@@ -67,25 +67,25 @@ export class NanarlandService {
   }
 
   /**
-   * Fetches the hrefs of all chronicles from Nanarland, utilizing cache management.
+   * Fetches the hrefs of all reviews from Nanarland, utilizing cache management.
    *
    * @param ignoreCache - A flag to bypass the cache if set to true.
-   * @returns A promise that resolves to an array of chronicle href strings.
+   * @returns A promise that resolves to an array of review href strings.
    */
-  async getChroniclesHrefs(ignoreCache: boolean): Promise<string[]> {
+  async getReviewsHrefs(ignoreCache: boolean): Promise<string[]> {
     const browser = await this.puppeteerService.getBrowser();
     const page = await browser.newPage();
     const link = `${this.BASE_URL}/chroniques/toutes-nos-chroniques.html`;
     const cacheKey = this.convertUrlToCacheKey(link);
 
     /**
-     * Retrieves a list of chronicle URLs from the specified page.
+     * Retrieves a list of review URLs from the specified page.
      *
      * @param page - The Puppeteer Page object.
-     * @returns A promise that resolves to an array of strings representing the chronicle URLs.
+     * @returns A promise that resolves to an array of strings representing the review URLs.
      * @throws InternalServerErrorException if extraction fails.
      */
-    async function getChroniclesList(page: Page): Promise<string[]> {
+    async function getReviewsList(page: Page): Promise<string[]> {
       try {
         return await page.$$eval('a.itemFigure.titlePrimary', (anchors) =>
           anchors
@@ -94,7 +94,7 @@ export class NanarlandService {
         );
       } catch (error) {
         throw new InternalServerErrorException(
-          `Failed to retrieve chronicles list (${link}), error: ${error}`,
+          `Failed to retrieve reviews list (${link}), error: ${error}`,
         );
       }
     }
@@ -107,35 +107,32 @@ export class NanarlandService {
       ignoreCache,
     );
 
-    const hrefs = await getChroniclesList(page);
-    this.logger.debug('Chronicles href answer:', hrefs);
+    const hrefs = await getReviewsList(page);
+    this.logger.debug('Reviews href answer:', hrefs);
     await page.close();
 
     return hrefs;
   }
 
   /**
-   * Retrieves detailed information for a chronicle from its href.
+   * Retrieves detailed information for a review from its href.
    *
-   * @param href - The relative URL of the chronicle.
+   * @param href - The relative URL of the review.
    * @param ignoreCache - (Optional) A flag to bypass cache if set to true.
-   * @returns A promise that resolves to a ChronicleDto containing chronicle details.
+   * @returns A promise that resolves to a ReviewDto containing review details.
    */
-  async getChronicleData(
-    href: string,
-    ignoreCache?: boolean,
-  ): Promise<ChronicleDto> {
+  async getReviewData(href: string, ignoreCache?: boolean): Promise<ReviewDto> {
     const BASE_URL = this.BASE_URL;
     const browser = await this.puppeteerService.getBrowser();
     const page = await browser.newPage();
-    const chronicleLink = BASE_URL + href;
-    const cacheKey = this.convertUrlToCacheKey(chronicleLink);
+    const reviewLink = BASE_URL + href;
+    const cacheKey = this.convertUrlToCacheKey(reviewLink);
     const logger = this.logger;
 
     /**
-     * Retrieves the text content of info paragraphs from the chronicle page.
+     * Retrieves the text content of info paragraphs from the review page.
      *
-     * @param page - The Puppeteer Page object from a Nanarland chronicle page.
+     * @param page - The Puppeteer Page object from a Nanarland review page.
      * @returns A promise that resolves to an array of strings representing the paragraph texts.
      */
     async function getInfos(page: Page): Promise<string[]> {
@@ -262,7 +259,7 @@ export class NanarlandService {
     }
 
     /**
-     * Retrieves the main title text from the chronicle page.
+     * Retrieves the main title text from the review page.
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to the main title.
@@ -273,7 +270,7 @@ export class NanarlandService {
         return await page.$eval('h1.mainTitle', (el) => el.innerText);
       } catch (error) {
         throw new InternalServerErrorException(
-          `Main title not found (${chronicleLink}), error: ${error}`,
+          `Main title not found (${reviewLink}), error: ${error}`,
         );
       }
     }
@@ -300,7 +297,7 @@ export class NanarlandService {
         );
         if (!href) {
           throw new InternalServerErrorException(
-            `Genre link not found (${chronicleLink})`,
+            `Genre link not found (${reviewLink})`,
           );
         }
         const link = BASE_URL + href;
@@ -308,13 +305,13 @@ export class NanarlandService {
         return genre;
       } catch (error) {
         throw new InternalServerErrorException(
-          `Genre not found (${chronicleLink}), error: ${error}`,
+          `Genre not found (${reviewLink}), error: ${error}`,
         );
       }
     }
 
     /**
-     * Retrieves the genre information from the chronicle page.
+     * Retrieves the genre information from the review page.
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to a GenreDto with genre details.
@@ -327,7 +324,7 @@ export class NanarlandService {
     }
 
     /**
-     * Retrieves the sub-genre information from the chronicle page.
+     * Retrieves the sub-genre information from the review page.
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to a GenreDto with sub-genre details.
@@ -340,7 +337,7 @@ export class NanarlandService {
     }
 
     /**
-     * Retrieves the creation (publication) year from the chronicle page.
+     * Retrieves the creation (publication) year from the review page.
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to the creation year as a number, or undefined if not available.
@@ -353,12 +350,12 @@ export class NanarlandService {
         );
         return getYearFromText(createYearText);
       } catch {
-        logger.verbose(`No publication year available (${chronicleLink})`);
+        logger.verbose(`No publication year available (${reviewLink})`);
       }
     }
 
     /**
-     * Retrieves the author's name from the chronicle page.
+     * Retrieves the author's name from the review page.
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to the author's name.
@@ -374,18 +371,18 @@ export class NanarlandService {
           return authorName;
         } else {
           throw new InternalServerErrorException(
-            `Undefined author name (${chronicleLink})`,
+            `Undefined author name (${reviewLink})`,
           );
         }
       } catch (error) {
         throw new InternalServerErrorException(
-          `Author name not found (${chronicleLink}), error: ${error}`,
+          `Author name not found (${reviewLink}), error: ${error}`,
         );
       }
     }
 
     /**
-     * Retrieves user ratings from the chronicle page.
+     * Retrieves user ratings from the review page.
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to an array of UserRatingDto objects containing user ratings.
@@ -516,7 +513,7 @@ export class NanarlandService {
     }
 
     /**
-     * Retrieves and processes a list of cut videos from the chronicle page.
+     * Retrieves and processes a list of cut videos from the review page.
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to an array of `CutVideoDto` containing video detail.
@@ -564,7 +561,7 @@ export class NanarlandService {
           })
         ) {
           throw new InternalServerErrorException(
-            `Invalid cut video data (${chronicleLink}):\n` +
+            `Invalid cut video data (${reviewLink}):\n` +
               `  - id=${rawVideo.id}\n` +
               `  - title=${rawVideo.title}\n` +
               `  - averageRating=${rawVideo.averageRating}\n` +
@@ -591,7 +588,7 @@ export class NanarlandService {
     }
 
     /**
-     * Retrieves and processes a list of "Escale à Nanarland" videos from the chronicle page.
+     * Retrieves and processes a list of "Escale à Nanarland" videos from the review page.
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to an array of `EscaleANanarlandVideoDto` containing video detail.
@@ -629,7 +626,7 @@ export class NanarlandService {
 
         if (!id || !title || !dateFrenchString || !href) {
           throw new InternalServerErrorException(
-            `Invalid escale video data (${chronicleLink}):\n` +
+            `Invalid escale video data (${reviewLink}):\n` +
               `  - spanTitle=${rawVideo.spanTitle}\n` +
               `  - id=${id}\n` +
               `  - title=${title}\n` +
@@ -656,7 +653,7 @@ export class NanarlandService {
     }
 
     /**
-     * Retrieves and processes a list of "Nanaroscope" videos from the chronicle page.
+     * Retrieves and processes a list of "Nanaroscope" videos from the review page.
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to an array of `NanaroscopeVideoDto` containing video detail.
@@ -709,7 +706,7 @@ export class NanarlandService {
       const videos = rawVideos.map((rawVideo) => {
         if (!rawVideo.aTitle || !rawVideo.spanTitle) {
           throw new InternalServerErrorException(
-            `Invalid Nanaroscope video data (${chronicleLink}):\n` +
+            `Invalid Nanaroscope video data (${reviewLink}):\n` +
               `  - aTitle=${rawVideo.aTitle}\n` +
               `  - spanTitle=${rawVideo.spanTitle}`,
           );
@@ -729,7 +726,7 @@ export class NanarlandService {
     }
 
     /**
-     * Retrieves the poster image URL from the chronicle page.
+     * Retrieves the poster image URL from the review page.
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to the URL of the poster image.
@@ -743,13 +740,13 @@ export class NanarlandService {
         );
       } catch (error) {
         throw new InternalServerErrorException(
-          `Poster not found (${chronicleLink}), error: ${error}`,
+          `Poster not found (${reviewLink}), error: ${error}`,
         );
       }
     }
 
     /**
-     * Retrieves the average user rating from the chronicle page.
+     * Retrieves the average user rating from the review page.
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to the average rating value.
@@ -764,13 +761,13 @@ export class NanarlandService {
         return parseFloat(averageRating);
       } catch (error) {
         throw new InternalServerErrorException(
-          `Average rating not found (${chronicleLink}), error: ${error}`,
+          `Average rating not found (${reviewLink}), error: ${error}`,
         );
       }
     }
 
     /**
-     * Retrieves the rarity rating from the chronicle page.
+     * Retrieves the rarity rating from the review page.
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to a RarityRanting value.
@@ -785,14 +782,14 @@ export class NanarlandService {
         return getRarityFromText(rarityRating);
       } catch (error) {
         throw new InternalServerErrorException(
-          `Rarity rating not found (${chronicleLink}), error: ${error}`,
+          `Rarity rating not found (${reviewLink}), error: ${error}`,
         );
       }
     }
 
     await this.puppeteerService.loadContentWithCache(
       page,
-      chronicleLink,
+      reviewLink,
       cacheKey,
       this.CACHE_TTL_SEC,
       ignoreCache,
@@ -801,30 +798,30 @@ export class NanarlandService {
     const infos = await getInfos(page);
     this.logger.debug('Movie Infos:', infos);
 
-    const chronicle = {} as ChronicleDto;
-    chronicle.link = chronicleLink;
-    chronicle.mainTitle = await getMainTitle(page);
-    chronicle.genre = await getGenre(page);
-    chronicle.subgenre = await getSubgenre(page);
-    chronicle.createYear = await getCreationYear(page);
-    chronicle.authorName = await getAuthorName(page);
-    chronicle.userRatings = await getUserRatings(page);
-    chronicle.averageRating = await getAverageRating(page);
-    chronicle.rarityRating = await getRarityRating(page);
-    chronicle.originalTitle = getOriginalTitle(infos);
-    chronicle.alternativeTitles = getAlternativeTitles(infos);
-    chronicle.directors = getDirectors(infos);
-    chronicle.releaseYear = getReleaseYear(infos);
-    chronicle.originCountries = getOriginCountries(infos);
-    chronicle.runtime = getRuntime(infos);
-    chronicle.cutVideos = await getCutVideos(page);
-    chronicle.escaleANanarlandVideos = await getEscaleANanarlandVideos(page);
-    chronicle.nanaroscopeVideos = await getNanaroscopeVideos(page);
-    chronicle.posterLink = await getPoster(page);
+    const review = {} as ReviewDto;
+    review.link = reviewLink;
+    review.mainTitle = await getMainTitle(page);
+    review.genre = await getGenre(page);
+    review.subgenre = await getSubgenre(page);
+    review.createYear = await getCreationYear(page);
+    review.authorName = await getAuthorName(page);
+    review.userRatings = await getUserRatings(page);
+    review.averageRating = await getAverageRating(page);
+    review.rarityRating = await getRarityRating(page);
+    review.originalTitle = getOriginalTitle(infos);
+    review.alternativeTitles = getAlternativeTitles(infos);
+    review.directors = getDirectors(infos);
+    review.releaseYear = getReleaseYear(infos);
+    review.originCountries = getOriginCountries(infos);
+    review.runtime = getRuntime(infos);
+    review.cutVideos = await getCutVideos(page);
+    review.escaleANanarlandVideos = await getEscaleANanarlandVideos(page);
+    review.nanaroscopeVideos = await getNanaroscopeVideos(page);
+    review.posterLink = await getPoster(page);
 
     await page.close();
 
-    this.logger.debug(`${chronicle.mainTitle} data:`, chronicle);
-    return chronicle;
+    this.logger.debug(`${review.mainTitle} data:`, review);
+    return review;
   }
 }

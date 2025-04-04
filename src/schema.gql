@@ -21,8 +21,8 @@ type Subgenre {
 }
 
 type Query {
-  chroniclesHrefs(ignoreCache: Boolean!): [String!]!
-  chronicleData(href: String!, ignoreCache: Boolean!): String!
+  reviewsHrefs(ignoreCache: Boolean!): [String!]!
+  reviewData(href: String!, ignoreCache: Boolean!): String!
   movieId(query: String!, year: Int): Int!
   movieData(movieId: Int!, ignoreCache: Boolean!, language: String): String!
   user(where: UserWhereInput!): User

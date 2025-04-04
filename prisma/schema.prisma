@@ -19,8 +19,8 @@ model User {
   username String @unique
   avatar   Bytes
 
-  writtenChronicles Chronicle[]
-  ratings           ChronicleRating[]
+  writtenReviews Review[]
+  ratings        ReviewRating[]
 
   @@map("users")
 }
@@ -32,7 +32,7 @@ model Genre {
   link  String @unique
 
   subgenreIds Subgenre[]
-  Chronicles  Chronicle[]
+  Reviews     Review[]
 
   @@map("genres")
 }
@@ -45,7 +45,7 @@ model Subgenre {
   Genre   Genre  @relation(fields: [genreId], references: [id])
   genreId Int
 
-  Chronicles Chronicle[]
+  Reviews Review[]
 
   @@map("subgenres")
 }
@@ -60,16 +60,16 @@ enum RarityRating {
   NEVER_RELEASED
 }
 
-model ChronicleRating {
-  chronicleId Int
-  userId      String
+model ReviewRating {
+  reviewId Int
+  userId   String
 
   rating Decimal
 
-  chronicle Chronicle @relation(fields: [chronicleId], references: [id])
-  user      User      @relation(fields: [userId], references: [id])
+  review Review @relation(fields: [reviewId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
-  @@id([chronicleId, userId])
+  @@id([reviewId, userId])
 }
 
 model CutVideo {
@@ -79,7 +79,7 @@ model CutVideo {
   averageRating Decimal
   links         Json
 
-  Chronicles Chronicle[]
+  Reviews Review[]
 }
 
 model EscaleANanarlandVideo {
@@ -89,7 +89,7 @@ model EscaleANanarlandVideo {
   pageLink        String
   publicationDate DateTime
 
-  Chronicles Chronicle[]
+  Reviews Review[]
 }
 
 model NanaroscopeVideo {
@@ -97,10 +97,10 @@ model NanaroscopeVideo {
 
   title String
 
-  Chronicles Chronicle[]
+  Reviews Review[]
 }
 
-model Chronicle {
+model Review {
   id        Int      @id @default(autoincrement())
   addedAt   DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -111,7 +111,7 @@ model Chronicle {
   author   User   @relation(fields: [authorId], references: [id])
   authorId String
 
-  ratings       ChronicleRating[]
+  ratings       ReviewRating[]
   averageRating Decimal
   rarityRating  RarityRating?
 
@@ -136,5 +136,5 @@ model Chronicle {
 
   tmdbId Int?
 
-  @@map("chronicles")
+  @@map("reviews")
 }

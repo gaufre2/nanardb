@@ -1,1 +1,1 @@
-export * from './chronicle.dto';
+export * from './nanarland.dto';

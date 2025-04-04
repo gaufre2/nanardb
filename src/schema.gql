@@ -10,9 +10,9 @@ type User {
 type Query {
   chroniclesHrefs(ignoreCache: Boolean!): [String!]!
   chronicleData(href: String!, ignoreCache: Boolean!): String!
-  movieId(query: String!, year: Float): Float!
-  movieData(movieId: Float!, ignoreCache: Boolean!, language: String): String!
   user(where: UserInput!): User
+  movieId(query: String!, year: Int): Int!
+  movieData(movieId: Int!, ignoreCache: Boolean!, language: String): String!
 }
 
 input UserInput {

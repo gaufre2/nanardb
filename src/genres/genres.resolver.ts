@@ -72,7 +72,7 @@ export class GenresResolver {
     const dataInput = {
       title: data.title,
       link: data.link,
-      Genre: { connect: { id: data.genreConnectId } },
+      genre: { connect: { id: data.genreConnectId } },
     };
     return await this.genresService.createSubgenre(dataInput);
   }

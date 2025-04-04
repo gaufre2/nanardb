@@ -20,7 +20,7 @@ model User {
   avatar   Bytes
 
   writtenReviews Review[]
-  ratings        ReviewRating[]
+  ratings        Rating[]
 
   @@map("users")
 }
@@ -32,7 +32,7 @@ model Genre {
   link  String @unique
 
   subgenreIds Subgenre[]
-  Reviews     Review[]
+  reviews     Review[]
 
   @@map("genres")
 }
@@ -42,15 +42,15 @@ model Subgenre {
 
   title   String @unique
   link    String @unique
-  Genre   Genre  @relation(fields: [genreId], references: [id])
+  genre   Genre  @relation(fields: [genreId], references: [id])
   genreId Int
 
-  Reviews Review[]
+  reviews Review[]
 
   @@map("subgenres")
 }
 
-enum RarityRating {
+enum Rarity {
   COMMON
   FINDABLE
   RARE
@@ -60,7 +60,7 @@ enum RarityRating {
   NEVER_RELEASED
 }
 
-model ReviewRating {
+model Rating {
   reviewId Int
   userId   String
 
@@ -79,7 +79,7 @@ model CutVideo {
   averageRating Decimal
   links         Json
 
-  Reviews Review[]
+  reviews Review[]
 }
 
 model EscaleANanarlandVideo {
@@ -89,7 +89,7 @@ model EscaleANanarlandVideo {
   pageLink        String
   publicationDate DateTime
 
-  Reviews Review[]
+  reviews Review[]
 }
 
 model NanaroscopeVideo {
@@ -97,7 +97,7 @@ model NanaroscopeVideo {
 
   title String
 
-  Reviews Review[]
+  reviews Review[]
 }
 
 model Review {
@@ -111,9 +111,9 @@ model Review {
   author   User   @relation(fields: [authorId], references: [id])
   authorId String
 
-  ratings       ReviewRating[]
+  ratings       Rating[]
   averageRating Decimal
-  rarityRating  RarityRating?
+  rarity        Rarity?
 
   genre             Genre    @relation(fields: [genreId], references: [id])
   genreId           Int

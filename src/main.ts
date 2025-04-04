@@ -8,7 +8,11 @@ async function bootstrap() {
       prefix: 'NanarDB',
     }),
   });
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
   app.enableShutdownHooks();
 
   await app.listen(process.env.PORT ?? 3000);

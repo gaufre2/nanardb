@@ -9,6 +9,7 @@ import { TmdbModule } from './tmdb/tmdb.module';
 import { UserModule } from './user/user.module';
 import { CommonModule } from './common/common.module';
 import { GenresModule } from './genres/genres.module';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { GenresModule } from './genres/genres.module';
     UserModule,
     CommonModule,
     GenresModule,
+    ReviewModule,
   ],
 })
 export class AppModule {}

@@ -1,47 +1,52 @@
-import {
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
-import { PrismaService } from 'src/common';
+import { ImageService, PrismaService } from 'src/common';
+import { CreateUserInput } from './dto';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(UserService.name);
 
-  async user(where: Prisma.UserWhereUniqueInput): Promise<User | null> {
-    return await this.prisma.user.findUnique({
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly image: ImageService,
+  ) {}
+
+  private async findUser(
+    where: Prisma.UserWhereUniqueInput,
+  ): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({
       where,
     });
+    if (user) {
+      this.logger.verbose(`User "${user.username}" found at Id: ${user.id}`);
+    }
+    return user;
   }
 
-  async createUser(data: Prisma.UserCreateInput): Promise<User> {
-    try {
-      return await this.prisma.user.create({ data });
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          throw new ConflictException('User already exists');
-        }
-      }
-      throw new InternalServerErrorException(error);
-    }
+  private async createUser(data: Prisma.UserCreateInput): Promise<User> {
+    const user = await this.prisma.user.create({ data });
+    this.logger.debug(`User "${user.username}" created with Id: ${user.id}`);
+    return user;
   }
 
-  async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
-    try {
-      return await this.prisma.user.delete({
-        where,
-      });
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException('User not found');
-        }
-      }
-      throw new InternalServerErrorException(error);
-    }
+  async findOrCreateUsers(userInputs: CreateUserInput[]): Promise<User[]> {
+    const users = await Promise.all(
+      userInputs.map(async (userInput) => {
+        // Search for existing User
+        const foundUser = await this.findUser({ username: userInput.username });
+        if (foundUser) return foundUser;
+
+        // Avatar fetching
+        const avatarBuffer = await this.image.fetchImage(userInput.avatarLink);
+        // Creation of the User if not found
+        const userData: Prisma.UserCreateInput = {
+          username: userInput.username,
+          avatar: avatarBuffer,
+        };
+        return await this.createUser(userData);
+      }),
+    );
+    return users;
   }
 }

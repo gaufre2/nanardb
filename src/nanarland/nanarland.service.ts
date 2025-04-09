@@ -6,17 +6,17 @@ import {
 import { Page } from 'puppeteer';
 import { RarityRantingEnum } from 'src/common';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
-import {
-  ReviewDto,
-  CutVideoDto,
-  EscaleANanarlandVideoDto,
-  GenreDto,
-  NanaroscopeVideoDto,
-  UserRatingDto,
-} from './dto';
+import { ReviewRawDto } from '../review/dto';
 import { ConfigService } from '@nestjs/config';
 import { parse as parseDate } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import {
+  CutVideoRawDto,
+  EscaleANanarlandVideoRawDto,
+  NanaroscopeVideoRawDto,
+} from 'src/videos/dto';
+import { GenreRawDto } from 'src/genres/dto';
+import { UserRatingRawDto } from 'src/rating/dto';
 
 @Injectable()
 /**
@@ -119,9 +119,12 @@ export class NanarlandService {
    *
    * @param href - The relative URL of the review.
    * @param ignoreCache - (Optional) A flag to bypass cache if set to true.
-   * @returns A promise that resolves to a ReviewDto containing review details.
+   * @returns A promise that resolves to a ReviewRawDto containing review details.
    */
-  async getReviewData(href: string, ignoreCache?: boolean): Promise<ReviewDto> {
+  async getReviewData(
+    href: string,
+    ignoreCache?: boolean,
+  ): Promise<ReviewRawDto> {
     const BASE_URL = this.BASE_URL;
     const browser = await this.puppeteerService.getBrowser();
     const page = await browser.newPage();
@@ -286,7 +289,7 @@ export class NanarlandService {
     async function getGenreOrSubgenre(
       page: Page,
       selector: string,
-    ): Promise<GenreDto> {
+    ): Promise<GenreRawDto> {
       try {
         const title = await page.$eval(
           selector,
@@ -301,7 +304,7 @@ export class NanarlandService {
           );
         }
         const link = BASE_URL + href;
-        const genre: GenreDto = { title, link };
+        const genre = { title, link };
         return genre;
       } catch (error) {
         throw new InternalServerErrorException(
@@ -314,9 +317,9 @@ export class NanarlandService {
      * Retrieves the genre information from the review page.
      *
      * @param page - The Puppeteer Page object.
-     * @returns A promise that resolves to a GenreDto with genre details.
+     * @returns A promise that resolves to a CreateGenreInput with genre details.
      */
-    async function getGenre(page: Page): Promise<GenreDto> {
+    async function getGenre(page: Page): Promise<GenreRawDto> {
       const selector =
         'body > main > div.mainInner > nav > ol > li:nth-child(3) > a';
 
@@ -327,9 +330,9 @@ export class NanarlandService {
      * Retrieves the sub-genre information from the review page.
      *
      * @param page - The Puppeteer Page object.
-     * @returns A promise that resolves to a GenreDto with sub-genre details.
+     * @returns A promise that resolves to a CreateSubgenreInput with sub-genre details.
      */
-    async function getSubgenre(page: Page): Promise<GenreDto> {
+    async function getSubgenre(page: Page): Promise<GenreRawDto> {
       const selector =
         'body > main > div.mainInner > nav > ol > li:nth-child(4) > a';
 
@@ -388,13 +391,13 @@ export class NanarlandService {
      * @returns A promise that resolves to an array of UserRatingDto objects containing user ratings.
      * @throws InternalServerErrorException if any required user rating data is missing.
      */
-    async function getUserRatings(page: Page): Promise<UserRatingDto[]> {
+    async function getUserRatings(page: Page): Promise<UserRatingRawDto[]> {
       const rawUserRatings = await page.evaluate(() => {
         const notes = Array.from(
           document.querySelectorAll('#notes .rating-user'),
         );
         return notes.map((note) => {
-          const name = note.querySelector('figure figcaption')?.textContent;
+          const username = note.querySelector('figure figcaption')?.textContent;
           const avatarLink = note
             .querySelector('figure img')
             ?.getAttribute('src');
@@ -403,7 +406,7 @@ export class NanarlandService {
 
           return {
             user: {
-              name,
+              username,
               avatarLink,
             },
             ratingString,
@@ -413,19 +416,19 @@ export class NanarlandService {
 
       const userRatings = rawUserRatings.map((rawUserRating) => {
         if (
-          !rawUserRating.user.name ||
+          !rawUserRating.user.username ||
           !rawUserRating.user.avatarLink ||
           !rawUserRating.ratingString
         ) {
           throw new InternalServerErrorException(
             `Invalid user rating data:\n` +
-              `  - user.name=${rawUserRating.user.name}\n` +
+              `  - user.username=${rawUserRating.user.username}\n` +
               `  - user.avatarLink=${rawUserRating.user.avatarLink}\n` +
               `  - rating=${rawUserRating.ratingString}`,
           );
         }
         const user = {
-          name: rawUserRating.user.name,
+          username: rawUserRating.user.username,
           avatarLink: rawUserRating.user.avatarLink,
         };
         const rating = parseFloat(rawUserRating.ratingString);
@@ -516,10 +519,10 @@ export class NanarlandService {
      * Retrieves and processes a list of cut videos from the review page.
      *
      * @param page - The Puppeteer Page object.
-     * @returns A promise that resolves to an array of `CutVideoDto` containing video detail.
+     * @returns A promise that resolves to an array of `CutVideoRawDto` containing video detail.
      * @throws InternalServerErrorException if any required video data is invalid.
      */
-    async function getCutVideos(page: Page): Promise<CutVideoDto[]> {
+    async function getCutVideos(page: Page): Promise<CutVideoRawDto[]> {
       const rawVideos = await page.evaluate(() => {
         const blockVideos = Array.from(
           document.querySelectorAll('#blockVideos .blockVideo'),
@@ -591,12 +594,12 @@ export class NanarlandService {
      * Retrieves and processes a list of "Escale à Nanarland" videos from the review page.
      *
      * @param page - The Puppeteer Page object.
-     * @returns A promise that resolves to an array of `EscaleANanarlandVideoDto` containing video detail.
+     * @returns A promise that resolves to an array of `EscaleANanarlandVideoRawDto` containing video detail.
      * @throws InternalServerErrorException if any required video data is invalid.
      */
     async function getEscaleANanarlandVideos(
       page: Page,
-    ): Promise<EscaleANanarlandVideoDto[]> {
+    ): Promise<EscaleANanarlandVideoRawDto[]> {
       const rawVideos = await page.evaluate(() => {
         const rows = Array.from(
           document.querySelectorAll('#blockEscales .row'),
@@ -656,12 +659,12 @@ export class NanarlandService {
      * Retrieves and processes a list of "Nanaroscope" videos from the review page.
      *
      * @param page - The Puppeteer Page object.
-     * @returns A promise that resolves to an array of `NanaroscopeVideoDto` containing video detail.
+     * @returns A promise that resolves to an array of `NanaroscopeVideoRawDto` containing video detail.
      * @throws InternalServerErrorException if any required video data is invalid.
      */
     async function getNanaroscopeVideos(
       page: Page,
-    ): Promise<NanaroscopeVideoDto[]> {
+    ): Promise<NanaroscopeVideoRawDto[]> {
       function extractSeasonEpisodeFromAElement(aTitle: string): string {
         const match = aTitle.match(/Saison\s+(\d+)\s+Episode\s+(\d+)/i);
 
@@ -798,7 +801,7 @@ export class NanarlandService {
     const infos = await getInfos(page);
     this.logger.debug('Movie Infos:', infos);
 
-    const review = {} as ReviewDto;
+    const review = {} as ReviewRawDto;
     review.link = reviewLink;
     review.mainTitle = await getMainTitle(page);
     review.genre = await getGenre(page);

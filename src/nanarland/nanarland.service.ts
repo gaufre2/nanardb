@@ -4,7 +4,6 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Page } from 'puppeteer';
-import { RarityRantingEnum } from 'src/common';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { ReviewRawDto } from '../review/dto';
 import { ConfigService } from '@nestjs/config';
@@ -17,6 +16,7 @@ import {
 } from 'src/videos/dto';
 import { GenreRawDto } from 'src/genres/dto';
 import { UserRatingRawDto } from 'src/rating/dto';
+import { Rarity } from '@prisma/client';
 
 /**
  * The `NanarlandService` class provides methods to scrape and retrieve information from the Nanarland website.
@@ -233,21 +233,21 @@ export class NanarlandService {
      * @returns The corresponding RarityRanting enum value.
      * @throws InternalServerErrorException if the rating is invalid or the text format is incorrect.
      */
-    function getRarityFromText(rating: string): RarityRantingEnum {
+    function getRarityFromText(rating: string): Rarity {
       const REGEX_RATING = /\/\s*(.+)/;
       const match = rating.match(REGEX_RATING);
 
       if (match && match[1]) {
         const rarityString = match[1].trim();
 
-        const rarityMap: { [key: string]: RarityRantingEnum } = {
-          Courant: RarityRantingEnum.COMMON,
-          Trouvable: RarityRantingEnum.FINDABLE,
-          Rare: RarityRantingEnum.RARE,
-          Exotique: RarityRantingEnum.EXOTIC,
-          'Pièce de Collection': RarityRantingEnum.COLLECTORS_ITEM,
-          Introuvable: RarityRantingEnum.UNFINDABLE,
-          'Jamais Sorti': RarityRantingEnum.NEVER_RELEASED,
+        const rarityMap: { [key: string]: Rarity } = {
+          Courant: Rarity.COMMON,
+          Trouvable: Rarity.FINDABLE,
+          Rare: Rarity.RARE,
+          Exotique: Rarity.EXOTIC,
+          'Pièce de Collection': Rarity.COLLECTORS_ITEM,
+          Introuvable: Rarity.UNFINDABLE,
+          'Jamais Sorti': Rarity.NEVER_RELEASED,
         };
 
         const rarity = rarityMap[rarityString];
@@ -773,10 +773,10 @@ export class NanarlandService {
      * Retrieves the rarity rating from the review page.
      *
      * @param page - The Puppeteer Page object.
-     * @returns A promise that resolves to a RarityRantingEnum value.
+     * @returns A promise that resolves to a Rarity value.
      * @throws InternalServerErrorException if the rarity rating is not found.
      */
-    async function getRarityRating(page: Page): Promise<RarityRantingEnum> {
+    async function getRarityRating(page: Page): Promise<Rarity> {
       try {
         const rarityRating = await page.$eval(
           '#cote-rarete > h3',

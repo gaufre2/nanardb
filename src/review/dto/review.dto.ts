@@ -1,3 +1,4 @@
+import { Rarity } from '@prisma/client';
 import {
   IsArray,
   IsNotEmpty,
@@ -7,7 +8,6 @@ import {
   IsString,
   IsUrl,
 } from 'class-validator';
-import { RarityRantingEnum } from 'src/common';
 import { GenreRawDto } from 'src/genres/dto';
 import { UserRatingRawDto } from 'src/rating/dto';
 import {
@@ -36,7 +36,7 @@ export class ReviewRawDto {
 
   @IsNumber()
   @IsNotEmpty()
-  rarityRating: RarityRantingEnum;
+  rarityRating: Rarity;
 
   @IsObject()
   @IsNotEmpty()

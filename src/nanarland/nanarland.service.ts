@@ -18,7 +18,6 @@ import {
 import { GenreRawDto } from 'src/genres/dto';
 import { UserRatingRawDto } from 'src/rating/dto';
 
-@Injectable()
 /**
  * The `NanarlandService` class provides methods to scrape and retrieve information from the Nanarland website.
  * It uses Puppeteer to navigate and extract data from the website's review pages.
@@ -31,6 +30,7 @@ import { UserRatingRawDto } from 'src/rating/dto';
  * @method getReviewsHrefs - Fetches the hrefs of all reviews from the Nanarland URL.
  * @method getReviewData - Retrieves the review details from the given href.
  */
+@Injectable()
 export class NanarlandService {
   constructor(
     private config: ConfigService,

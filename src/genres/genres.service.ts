@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Genre, Prisma, Subgenre } from '@prisma/client';
-import { PrismaService } from 'src/common/services';
+import { PrismaService } from 'src/common';
 
 @Injectable()
 export class GenresService {

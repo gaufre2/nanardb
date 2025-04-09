@@ -1,4 +1,4 @@
-export enum RarityRanting {
+export enum RarityRantingEnum {
   COMMON = 1,
   FINDABLE = 2,
   RARE = 3,

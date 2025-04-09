@@ -4,7 +4,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Page } from 'puppeteer';
-import { RarityRanting } from 'src/common/dto';
+import { RarityRantingEnum } from 'src/common';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import {
   ReviewDto,
@@ -230,21 +230,21 @@ export class NanarlandService {
      * @returns The corresponding RarityRanting enum value.
      * @throws InternalServerErrorException if the rating is invalid or the text format is incorrect.
      */
-    function getRarityFromText(rating: string): RarityRanting {
+    function getRarityFromText(rating: string): RarityRantingEnum {
       const REGEX_RATING = /\/\s*(.+)/;
       const match = rating.match(REGEX_RATING);
 
       if (match && match[1]) {
         const rarityString = match[1].trim();
 
-        const rarityMap: { [key: string]: RarityRanting } = {
-          Courant: RarityRanting.COMMON,
-          Trouvable: RarityRanting.FINDABLE,
-          Rare: RarityRanting.RARE,
-          Exotique: RarityRanting.EXOTIC,
-          'Pièce de Collection': RarityRanting.COLLECTORS_ITEM,
-          Introuvable: RarityRanting.UNFINDABLE,
-          'Jamais Sorti': RarityRanting.NEVER_RELEASED,
+        const rarityMap: { [key: string]: RarityRantingEnum } = {
+          Courant: RarityRantingEnum.COMMON,
+          Trouvable: RarityRantingEnum.FINDABLE,
+          Rare: RarityRantingEnum.RARE,
+          Exotique: RarityRantingEnum.EXOTIC,
+          'Pièce de Collection': RarityRantingEnum.COLLECTORS_ITEM,
+          Introuvable: RarityRantingEnum.UNFINDABLE,
+          'Jamais Sorti': RarityRantingEnum.NEVER_RELEASED,
         };
 
         const rarity = rarityMap[rarityString];
@@ -770,10 +770,10 @@ export class NanarlandService {
      * Retrieves the rarity rating from the review page.
      *
      * @param page - The Puppeteer Page object.
-     * @returns A promise that resolves to a RarityRanting value.
+     * @returns A promise that resolves to a RarityRantingEnum value.
      * @throws InternalServerErrorException if the rarity rating is not found.
      */
-    async function getRarityRating(page: Page): Promise<RarityRanting> {
+    async function getRarityRating(page: Page): Promise<RarityRantingEnum> {
       try {
         const rarityRating = await page.$eval(
           '#cote-rarete > h3',

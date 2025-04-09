@@ -8,7 +8,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { MovieDetailsResponseDto, SearchMovieResponseDto } from './dto';
-import { RedisService } from 'src/common/services';
+import { RedisService } from 'src/common';
 
 @Injectable()
 export class TmdbService {

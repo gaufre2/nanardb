@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma, Rating } from '@prisma/client';
-import { PrismaService } from 'src/common/services';
+import { PrismaService } from 'src/common';
 
 @Injectable()
 export class RatingService {

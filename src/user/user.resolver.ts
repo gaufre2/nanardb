@@ -8,7 +8,7 @@ import {
 } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { CreateUserInput, UserWhereInput } from './dto';
-import { ImageService } from 'src/common/services';
+import { ImageService } from 'src/common';
 
 @ObjectType()
 class User {

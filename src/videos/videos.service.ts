@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/common/services';
+import { PrismaService } from 'src/common';
 import {
   CutVideo,
   EscaleVideo,

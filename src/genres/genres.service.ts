@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class GenresService {
-  nestedConnectOrCreateSubgenreAndGenre(
+  prepareSubgenreConnectOrCreateNestedGenreInput(
     inputSubgenre: Prisma.SubgenreCreateWithoutGenreInput,
     inputGenre: Prisma.GenreCreateWithoutSubgenreIdsInput,
   ): Prisma.SubgenreCreateNestedOneWithoutReviewsInput {

@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class VideosService {
-  nestedConnectOrCreateCutVideos(
+  prepareCutVideosConnectOrCreateInput(
     inputs: Prisma.CutVideoCreateWithoutReviewsInput[],
   ): Prisma.CutVideoCreateNestedManyWithoutReviewsInput {
     return {
@@ -18,7 +18,7 @@ export class VideosService {
     };
   }
 
-  nestedConnectOrCreateEscaleVideos(
+  prepareEscaleVideosConnectOrCreateInput(
     inputs: Prisma.EscaleVideoCreateWithoutReviewsInput[],
   ): Prisma.EscaleVideoCreateNestedManyWithoutReviewsInput {
     return {
@@ -33,7 +33,7 @@ export class VideosService {
     };
   }
 
-  nestedConnectOrCreateNanaroscopeVideos(
+  prepareNanaroscopeVideosConnectOrCreateInput(
     inputs: Prisma.NanaroscopeVideoCreateWithoutReviewsInput[],
   ): Prisma.NanaroscopeVideoCreateNestedManyWithoutReviewsInput {
     return {

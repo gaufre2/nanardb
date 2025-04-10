@@ -4,12 +4,12 @@ import {
   IsNumber,
   IsObject,
 } from 'class-validator';
-import { CreateUserInput } from 'src/user/dto';
+import { UserRawDto } from 'src/user/dto';
 
 export class UserRatingRawDto {
   @IsObject()
   @IsNotEmptyObject()
-  user: CreateUserInput;
+  user: UserRawDto;
 
   @IsNumber()
   @IsNotEmpty()

@@ -30,7 +30,7 @@ export class CutVideoRawDto {
   }[];
 }
 
-export class EscaleANanarlandVideoRawDto {
+export class EscaleVideoRawDto {
   @IsInt()
   @IsNotEmpty()
   id: number;

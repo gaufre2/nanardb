@@ -11,12 +11,13 @@ import { parse as parseDate } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import {
   CutVideoRawDto,
-  EscaleANanarlandVideoRawDto,
+  EscaleVideoRawDto,
   NanaroscopeVideoRawDto,
 } from 'src/videos/dto';
 import { GenreRawDto } from 'src/genres/dto';
 import { UserRatingRawDto } from 'src/rating/dto';
 import { Rarity } from '@prisma/client';
+import { UserRawDto } from 'src/user/dto';
 
 /**
  * The `NanarlandService` class provides methods to scrape and retrieve information from the Nanarland website.
@@ -25,7 +26,7 @@ import { Rarity } from '@prisma/client';
  * @class
  * @classdesc This service is responsible for fetching and processing review data from Nanarland.
  *
- * @param {PuppeteerService} puppeteerService - The Puppeteer service used for web scraping.
+ * @param {PuppeteerService} puppeteer - The Puppeteer service used for web scraping.
  *
  * @method getReviewsHrefs - Fetches the hrefs of all reviews from the Nanarland URL.
  * @method getReviewData - Retrieves the review details from the given href.
@@ -34,7 +35,7 @@ import { Rarity } from '@prisma/client';
 export class NanarlandService {
   constructor(
     private config: ConfigService,
-    private puppeteerService: PuppeteerService,
+    private puppeteer: PuppeteerService,
   ) {}
   private readonly logger = new Logger(NanarlandService.name, {
     timestamp: true,
@@ -73,7 +74,7 @@ export class NanarlandService {
    * @returns A promise that resolves to an array of review href strings.
    */
   async getReviewsHrefs(ignoreCache: boolean): Promise<string[]> {
-    const browser = await this.puppeteerService.getBrowser();
+    const browser = await this.puppeteer.getBrowser();
     const page = await browser.newPage();
     const link = `${this.BASE_URL}/chroniques/toutes-nos-chroniques.html`;
     const cacheKey = this.convertUrlToCacheKey(link);
@@ -99,7 +100,7 @@ export class NanarlandService {
       }
     }
 
-    await this.puppeteerService.loadContentWithCache(
+    await this.puppeteer.loadContentWithCache(
       page,
       link,
       cacheKey,
@@ -126,7 +127,7 @@ export class NanarlandService {
     ignoreCache?: boolean,
   ): Promise<ReviewRawDto> {
     const BASE_URL = this.BASE_URL;
-    const browser = await this.puppeteerService.getBrowser();
+    const browser = await this.puppeteer.getBrowser();
     const page = await browser.newPage();
     const reviewLink = BASE_URL + href;
     const cacheKey = this.convertUrlToCacheKey(reviewLink);
@@ -364,24 +365,26 @@ export class NanarlandService {
      * @returns A promise that resolves to the author's name.
      * @throws InternalServerErrorException if the author's name is not found.
      */
-    async function getAuthorName(page: Page): Promise<string> {
-      try {
-        const authorName = await page.$eval(
-          'body > main > div.mainInner > div > div:nth-child(1) > div.row > div.col-12.col-md-8.col-lg-8 > div.row.my-3 > div > div > figure > figcaption',
-          (el) => el.innerText,
-        );
-        if (authorName) {
-          return authorName;
-        } else {
-          throw new InternalServerErrorException(
-            `Undefined author name (${reviewLink})`,
-          );
+    async function getAuthor(page: Page): Promise<UserRawDto> {
+      const rawAuthor = await page.evaluate(() => {
+        const authorSelector =
+          'body > main > div.mainInner > div > div:nth-child(1) > div.row > div.col-12.col-md-8.col-lg-8 > div.row.my-3 > div > div > figure';
+        const author = document.querySelector(authorSelector);
+        if (!author) {
+          throw new InternalServerErrorException('Author element not found');
         }
-      } catch (error) {
+        return {
+          username: author.querySelector('figcaption')?.innerText,
+          avatarLink: author.querySelector('img')?.getAttribute('src'),
+        } as UserRawDto;
+      });
+
+      if (!rawAuthor.username || !rawAuthor.avatarLink) {
         throw new InternalServerErrorException(
-          `Author name not found (${reviewLink}), error: ${error}`,
+          `Author datas invalid (${reviewLink})`,
         );
       }
+      return rawAuthor;
     }
 
     /**
@@ -594,12 +597,10 @@ export class NanarlandService {
      * Retrieves and processes a list of "Escale à Nanarland" videos from the review page.
      *
      * @param page - The Puppeteer Page object.
-     * @returns A promise that resolves to an array of `EscaleANanarlandVideoRawDto` containing video detail.
+     * @returns A promise that resolves to an array of `EscaleVideoRawDto` containing video detail.
      * @throws InternalServerErrorException if any required video data is invalid.
      */
-    async function getEscaleANanarlandVideos(
-      page: Page,
-    ): Promise<EscaleANanarlandVideoRawDto[]> {
+    async function getEscaleVideos(page: Page): Promise<EscaleVideoRawDto[]> {
       const rawVideos = await page.evaluate(() => {
         const rows = Array.from(
           document.querySelectorAll('#blockEscales .row'),
@@ -790,7 +791,7 @@ export class NanarlandService {
       }
     }
 
-    await this.puppeteerService.loadContentWithCache(
+    await this.puppeteer.loadContentWithCache(
       page,
       reviewLink,
       cacheKey,
@@ -807,7 +808,7 @@ export class NanarlandService {
     review.genre = await getGenre(page);
     review.subgenre = await getSubgenre(page);
     review.createYear = await getCreationYear(page);
-    review.authorName = await getAuthorName(page);
+    review.author = await getAuthor(page);
     review.userRatings = await getUserRatings(page);
     review.averageRating = await getAverageRating(page);
     review.rarityRating = await getRarityRating(page);
@@ -818,7 +819,7 @@ export class NanarlandService {
     review.originCountries = getOriginCountries(infos);
     review.runtime = getRuntime(infos);
     review.cutVideos = await getCutVideos(page);
-    review.escaleANanarlandVideos = await getEscaleANanarlandVideos(page);
+    review.escaleVideos = await getEscaleVideos(page);
     review.nanaroscopeVideos = await getNanaroscopeVideos(page);
     review.posterLink = await getPoster(page);
 

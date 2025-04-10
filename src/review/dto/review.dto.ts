@@ -10,9 +10,10 @@ import {
 } from 'class-validator';
 import { GenreRawDto } from 'src/genres/dto';
 import { UserRatingRawDto } from 'src/rating/dto';
+import { UserRawDto } from 'src/user/dto';
 import {
   CutVideoRawDto,
-  EscaleANanarlandVideoRawDto,
+  EscaleVideoRawDto,
   NanaroscopeVideoRawDto,
 } from 'src/videos/dto';
 
@@ -25,9 +26,9 @@ export class ReviewRawDto {
   @IsOptional()
   createYear?: number;
 
-  @IsString()
+  @IsObject()
   @IsNotEmpty()
-  authorName: string;
+  author: UserRawDto;
 
   @IsArray()
   @IsObject({ each: true })
@@ -83,7 +84,7 @@ export class ReviewRawDto {
 
   @IsArray()
   @IsObject({ each: true })
-  escaleANanarlandVideos: EscaleANanarlandVideoRawDto[];
+  escaleVideos: EscaleVideoRawDto[];
 
   @IsArray()
   @IsObject({ each: true })

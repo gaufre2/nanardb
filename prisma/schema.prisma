@@ -97,9 +97,9 @@ model EscaleVideo {
 }
 
 model NanaroscopeVideo {
-  seasonEpisodeId String @id
+  seasonEpisodeCode String @id
 
-  title String
+  tagline String
 
   reviews Review[]
 

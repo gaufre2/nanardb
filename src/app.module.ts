@@ -12,6 +12,7 @@ import { GenresModule } from './genres/genres.module';
 import { ReviewModule } from './review/review.module';
 import { RatingModule } from './rating/rating.module';
 import { VideosModule } from './videos/videos.module';
+import { PosterModule } from './poster/poster.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { VideosModule } from './videos/videos.module';
     ReviewModule,
     RatingModule,
     VideosModule,
+    PosterModule,
   ],
 })
 export class AppModule {}

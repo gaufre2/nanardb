@@ -135,8 +135,7 @@ model Review {
   escaleVideos      EscaleVideo[]
   nanaroscopeVideos NanaroscopeVideo[]
 
-  poster     Bytes?
-  posterFile String?
+  posterFilename String?
 
   tmdbId Int?
 

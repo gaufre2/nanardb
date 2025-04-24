@@ -55,7 +55,7 @@ Since this is a learning project, some of the selected technologies might appear
   - [ ] Handle cases where the movie is not found.
   - [x] Fetch additional movie data from TMDb.
 - [x] Cache fetched online content in Redis.
-- [ ] Store movie posters outside the database.
+- [x] Store movie posters outside the database.
 - [ ] Enable database interaction through GraphQL:
   - [ ] Update a review.
   - [ ] Retrieve a sorted list based on specified arguments.

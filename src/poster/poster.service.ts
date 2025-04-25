@@ -37,7 +37,7 @@ export class PosterService implements OnModuleInit {
     await this.initStorageDirectory();
   }
 
-  async savePosterFromBuffer(image: PosterRawDto): Promise<string> {
+  private async savePoster(image: PosterRawDto): Promise<string> {
     const hash = createHash('sha256').update(image.buffer).digest('hex');
     const filename = `${hash}.${image.extension}`;
     const filepath = join(this.storagePosterPath, filename);
@@ -53,11 +53,11 @@ export class PosterService implements OnModuleInit {
     return filename;
   }
 
-  async savePosterFromLink(link: string): Promise<string> {
+  async fetchAndSavePoster(link: string): Promise<string> {
     const buffer = await this.image.fetchImage(link);
     const extension = parse(new URL(link).pathname).ext.slice(1);
 
-    return await this.savePosterFromBuffer({
+    return await this.savePoster({
       buffer,
       extension,
     });

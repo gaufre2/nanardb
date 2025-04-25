@@ -68,15 +68,16 @@ export class NanarlandService {
   }
 
   /**
-   * Fetches the hrefs of all reviews from Nanarland, utilizing cache management.
+   * Fetches the links of all reviews from Nanarland, utilizing cache management.
    *
    * @param ignoreCache - A flag to bypass the cache if set to true.
-   * @returns A promise that resolves to an array of review href strings.
+   * @returns A promise that resolves to an array of review link strings.
    */
-  async getReviewsHrefs(ignoreCache: boolean): Promise<string[]> {
+  async getReviewsLinks(ignoreCache: boolean): Promise<string[]> {
     const browser = await this.puppeteer.getBrowser();
     const page = await browser.newPage();
-    const link = `${this.BASE_URL}/chroniques/toutes-nos-chroniques.html`;
+    const baseUrl = this.BASE_URL;
+    const link = `${baseUrl}/chroniques/toutes-nos-chroniques.html`;
     const cacheKey = this.convertUrlToCacheKey(link);
 
     /**
@@ -88,11 +89,18 @@ export class NanarlandService {
      */
     async function getReviewsList(page: Page): Promise<string[]> {
       try {
-        return await page.$$eval('a.itemFigure.titlePrimary', (anchors) =>
-          anchors
-            .map((a) => a.getAttribute('href'))
-            .filter((href) => href !== null),
+        const hrefs = await page.$$eval(
+          'a.itemFigure.titlePrimary',
+          (anchors) =>
+            anchors
+              .map((a) => a.getAttribute('href'))
+              .filter((href) => href !== null),
         );
+
+        const links = hrefs.map((href) => {
+          return `${baseUrl}${href}`;
+        });
+        return links;
       } catch (error) {
         throw new InternalServerErrorException(
           `Failed to retrieve reviews list (${link}), error: ${error}`,
@@ -108,11 +116,11 @@ export class NanarlandService {
       ignoreCache,
     );
 
-    const hrefs = await getReviewsList(page);
-    this.logger.debug('Reviews href answer:', hrefs);
+    const links = await getReviewsList(page);
+    this.logger.debug('Reviews links answer:', links);
     await page.close();
 
-    return hrefs;
+    return links;
   }
 
   /**

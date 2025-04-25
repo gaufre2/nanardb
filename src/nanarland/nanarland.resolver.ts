@@ -6,8 +6,8 @@ export class NanarlandResolver {
   constructor(private readonly nanarlandService: NanarlandService) {}
 
   @Query(() => [String])
-  async reviewsHrefs(@Args('ignoreCache') ignoreCache: boolean) {
-    return this.nanarlandService.getReviewsHrefs(ignoreCache);
+  async reviewsLinks(@Args('ignoreCache') ignoreCache: boolean) {
+    return this.nanarlandService.getReviewsLinks(ignoreCache);
   } // TODO remove, only for test
 
   @Query(() => String)

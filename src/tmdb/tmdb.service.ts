@@ -3,7 +3,6 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
-  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
@@ -85,19 +84,29 @@ export class TmdbService {
    *
    * @param query - The search query string for the movie title.
    * @param year - (Optional) The release year of the movie to narrow down the search.
-   * @returns A promise that resolves to the movie ID if found.
-   * @throws {NotFoundException} If no movie matching the query and optional year is found.
+   * @returns A promise that resolves to the movie ID if found, undefined if not found.
    */
-  async getMovieId(query: string, year?: number): Promise<number> {
+  async getMovieId(query: string, year?: number): Promise<number | undefined> {
     const movieId = await this.searchMovie(query, undefined, year);
 
     if (movieId.results[0]) {
-      this.logger.verbose('Movie ID: ' + movieId.results[0].id);
+      this.logger.verbose(
+        `Found movie with ID ${movieId.results[0].id}` +
+          `${year ? ' (with year match)' : ' (without year match)'}`,
+      );
       return movieId.results[0].id;
+    } else {
+      if (year) {
+        // If no match with year, try without year parameter
+        const idWithoutYear = await this.getMovieId(query);
+        if (idWithoutYear) {
+          return idWithoutYear;
+        }
+      }
+      this.logger.warn(
+        `Movie with query "${query}"${year ? ` and year "${year}"` : ''} not found.`,
+      );
     }
-    throw new NotFoundException(
-      `Movie with query "${query}"${year ? ` and year "${year}"` : ''} not found.`,
-    );
   }
 
   /**

@@ -2,70 +2,13 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
-  id: String!
-  username: String!
-}
-
-type Genre {
-  id: Int!
-  title: String!
-  link: String!
-}
-
-type Subgenre {
-  id: Int!
-  title: String!
-  link: String!
-  genreId: Int!
-}
-
 type Query {
-  reviewsHrefs(ignoreCache: Boolean!): [String!]!
+  reviewsLinks(ignoreCache: Boolean!): [String!]!
   reviewData(href: String!, ignoreCache: Boolean!): String!
   movieId(query: String!, year: Int): Int!
   movieData(movieId: Int!, ignoreCache: Boolean!, language: String): String!
-  user(where: UserWhereInput!): User
-  genre(where: GenreWhereInput!): Genre
-  subgenre(where: SubgenreWhereInput!): Subgenre
-}
-
-input UserWhereInput {
-  id: String
-  username: String
-}
-
-input GenreWhereInput {
-  id: Int
-  title: String
-}
-
-input SubgenreWhereInput {
-  id: Int
-  title: String
 }
 
 type Mutation {
-  createUser(input: CreateUserInput!): User!
-  deleteUser(where: UserWhereInput!): User
-  createGenre(data: CreateGenreInput!): Genre!
-  createSubgenre(data: CreateSubgenreInput!): Subgenre!
-  deleteGenre(where: GenreWhereInput!): Genre
-  deleteSubgenre(where: SubgenreWhereInput!): Subgenre
-}
-
-input CreateUserInput {
-  username: String!
-  avatarLink: String!
-}
-
-input CreateGenreInput {
-  title: String!
-  link: String!
-}
-
-input CreateSubgenreInput {
-  title: String!
-  link: String!
-  genreConnectId: Int!
+  fetchAndCreateReviews(delay: Float!, fetchingNumber: Int!, overwrite: Boolean, ignoreCache: Boolean): [String!]!
 }

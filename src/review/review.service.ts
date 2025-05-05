@@ -1,65 +1,162 @@
-import {
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Prisma, Review } from '@prisma/client';
-import { PrismaService } from 'src/common';
+import { ImageService, PrismaService } from 'src/common';
+import { GenresService } from 'src/genres/genres.service';
+import { NanarlandService } from 'src/nanarland/nanarland.service';
+import { RatingService } from 'src/rating/rating.service';
+import { UserService } from 'src/user/user.service';
+import { VideosService } from 'src/videos/videos.service';
+import { ReviewRawDto } from './dto';
+import { PosterService } from 'src/poster/poster.service';
+import { TmdbService } from 'src/tmdb/tmdb.service';
 
 @Injectable()
 export class ReviewService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(ReviewService.name);
 
-  async review(where: Prisma.ReviewWhereUniqueInput): Promise<Review | null> {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly image: ImageService,
+    private readonly nanarland: NanarlandService,
+    private readonly tmdb: TmdbService,
+    private readonly videos: VideosService,
+    private readonly rating: RatingService,
+    private readonly genres: GenresService,
+    private readonly user: UserService,
+    private readonly poster: PosterService,
+  ) {}
+
+  async findReview(
+    where: Prisma.ReviewWhereUniqueInput,
+  ): Promise<Review | null> {
     return await this.prisma.review.findUnique({ where });
   }
-  async reviews(where: Prisma.ReviewWhereInput): Promise<Review[] | null> {
+  async findReviews(where: Prisma.ReviewWhereInput): Promise<Review[] | null> {
     return await this.prisma.review.findMany({ where });
   }
 
   async createReview(data: Prisma.ReviewCreateInput): Promise<Review> {
-    try {
-      return await this.prisma.review.create({ data });
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          throw new ConflictException(`Review already exists`);
-        }
-        // TODO add error code for invalid foreigner table id
-      }
-      throw new InternalServerErrorException(error);
-    }
+    return await this.prisma.review.create({ data });
   }
 
-  async updateReview(
-    data: Prisma.ReviewCreateInput,
-    where: Prisma.ReviewWhereUniqueInput,
+  private sleep(delay: number): Promise<void> {
+    this.logger.verbose(`Waiting ${delay}ms before next fetching`);
+    return new Promise((resolve) => setTimeout(resolve, delay));
+  }
+
+  private async resolveReviewRelations(
+    rawData: ReviewRawDto,
+  ): Promise<Prisma.ReviewCreateInput> {
+    const author = {
+      username: rawData.author.username,
+      avatar: await this.image.fetchImage(rawData.author.avatarLink),
+    } as Prisma.UserCreateWithoutRatingsInput;
+    const authorConnectOrCreateInput =
+      this.user.prepareUserConnectOrCreateInput(author);
+    const ratingsConnectOrCreateInput =
+      await this.rating.prepareRatingsConnectOrCreateInput(rawData.userRatings);
+    const subgenreConnectOrCreateNestedGenreInput =
+      this.genres.prepareSubgenreConnectOrCreateNestedGenreInput(
+        rawData.subgenre,
+        rawData.genre,
+      );
+    const cutVideosConnectOrCreateInput =
+      this.videos.prepareCutVideosConnectOrCreateInput(rawData.cutVideos);
+    const escaleVideosConnectOrCreateInput =
+      this.videos.prepareEscaleVideosConnectOrCreateInput(rawData.escaleVideos);
+    const nanaroscopeVideosConnectOrCreateInput =
+      this.videos.prepareNanaroscopeVideosConnectOrCreateInput(
+        rawData.nanaroscopeVideos,
+      );
+    const savedPosterFilename = await this.poster.fetchAndSavePoster(
+      rawData.posterLink,
+    );
+
+    const review: Prisma.ReviewCreateInput = {
+      link: rawData.link,
+      createYear: rawData.createYear,
+      author: authorConnectOrCreateInput,
+      ratings: ratingsConnectOrCreateInput,
+      averageRating: rawData.averageRating,
+      rarity: rawData.rarityRating,
+      subgenre: subgenreConnectOrCreateNestedGenreInput,
+      mainTitle: rawData.mainTitle,
+      originalTitle: rawData.originalTitle,
+      alternativeTitles: rawData.alternativeTitles,
+      directors: rawData.directors,
+      releaseYear: rawData.releaseYear,
+      originCountries: rawData.originCountries,
+      runtime: rawData.runtime,
+      cutVideos: cutVideosConnectOrCreateInput,
+      escaleVideos: escaleVideosConnectOrCreateInput,
+      nanaroscopeVideos: nanaroscopeVideosConnectOrCreateInput,
+      posterFilename: savedPosterFilename,
+    };
+    return review;
+  }
+
+  private async fetchAndCreateReview(
+    reviewLink: string,
+    ignoreCache?: boolean,
   ): Promise<Review> {
-    try {
-      return await this.prisma.review.update({ data, where });
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException(`Review not found`); // TODO if invalid foreigner table ?
-        }
-      }
-      throw new InternalServerErrorException(error);
-    }
+    // Logging
+    this.logger.verbose(`Fetching data from "${reviewLink}"`);
+
+    // Fetch review data
+    const reviewData = await this.nanarland.getReviewData(
+      reviewLink,
+      ignoreCache ?? false,
+    );
+
+    // Resolve review relations
+    const reviewCreateInput = await this.resolveReviewRelations(reviewData);
+
+    // Get tmdb id
+    reviewCreateInput.tmdbId = await this.tmdb.getMovieId(
+      reviewData.mainTitle,
+      reviewData.releaseYear,
+    );
+
+    // Create review
+    return await this.createReview(reviewCreateInput);
   }
 
-  async deleteReview(
-    where: Prisma.ReviewWhereUniqueInput,
-  ): Promise<Review | null> {
-    try {
-      return await this.prisma.review.delete({ where });
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException(`Review not found`); // TODO if invalid foreigner table ?
-        }
+  async fetchAndCreateReviews(
+    delay: number,
+    fetchingNumber: number = Infinity,
+    overwrite?: boolean,
+    ignoreCache?: boolean,
+  ): Promise<Review[]> {
+    // Get reviews hrefs
+    const reviewsLinks = await this.nanarland.getReviewsLinks(
+      ignoreCache ?? false,
+    );
+
+    // Loop for all reviews
+    let fetchedReview = 0;
+    const reviews: Review[] = [];
+    for (const reviewLink of reviewsLinks) {
+      // Skip review if already exist and not overwrite
+      const existingReview = await this.findReview({ link: reviewLink });
+      if (existingReview && !overwrite) {
+        this.logger.verbose(
+          `Skipping existing review: "${existingReview.mainTitle}"`,
+        );
+        continue;
       }
-      throw new InternalServerErrorException(error);
+
+      if (fetchedReview < fetchingNumber) {
+        // Fetching and create
+        const review = await this.fetchAndCreateReview(reviewLink, ignoreCache);
+        reviews.push(review);
+        fetchedReview++;
+        await this.sleep(delay);
+      } else {
+        this.logger.log(`Finished: ${reviews.length} reviews fetched.`);
+        break;
+      }
     }
+    // Return fetched reviews
+    return reviews;
   }
 }

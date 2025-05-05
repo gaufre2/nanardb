@@ -28,8 +28,8 @@ import { UserRawDto } from 'src/user/dto';
  *
  * @param {PuppeteerService} puppeteer - The Puppeteer service used for web scraping.
  *
- * @method getReviewsHrefs - Fetches the hrefs of all reviews from the Nanarland URL.
- * @method getReviewData - Retrieves the review details from the given href.
+ * @method getReviewsLinks - Fetches the links of all reviews from Nanarland.
+ * @method getReviewData - Retrieves the review details from the given review link.
  */
 @Injectable()
 export class NanarlandService {
@@ -98,7 +98,7 @@ export class NanarlandService {
         );
 
         const links = hrefs.map((href) => {
-          return `${baseUrl}${href}`;
+          return baseUrl + href;
         });
         return links;
       } catch (error) {
@@ -124,20 +124,19 @@ export class NanarlandService {
   }
 
   /**
-   * Retrieves detailed information for a review from its href.
+   * Retrieves detailed information for a review from its link.
    *
-   * @param href - The relative URL of the review.
+   * @param reviewLink - The link of the review.
    * @param ignoreCache - (Optional) A flag to bypass cache if set to true.
    * @returns A promise that resolves to a ReviewRawDto containing review details.
    */
   async getReviewData(
-    href: string,
+    reviewLink: string,
     ignoreCache?: boolean,
   ): Promise<ReviewRawDto> {
-    const BASE_URL = this.BASE_URL;
+    const baseUrl = this.BASE_URL;
     const browser = await this.puppeteer.getBrowser();
     const page = await browser.newPage();
-    const reviewLink = BASE_URL + href;
     const cacheKey = this.convertUrlToCacheKey(reviewLink);
     const logger = this.logger;
 
@@ -312,7 +311,7 @@ export class NanarlandService {
             `Genre link not found (${reviewLink})`,
           );
         }
-        const link = BASE_URL + href;
+        const link = baseUrl + href;
         const genre = { title, link };
         return genre;
       } catch (error) {
@@ -586,7 +585,7 @@ export class NanarlandService {
         const title = rawVideo.title;
         const averageRating = parseFloat(rawVideo.averageRating);
         const links = rawVideo.links.map((link) => ({
-          src: BASE_URL + link.href,
+          src: baseUrl + link.href,
           type: link.type || 'undefined',
         }));
 
@@ -656,7 +655,7 @@ export class NanarlandService {
         return {
           id: parseInt(id),
           title: title,
-          pageLink: BASE_URL + href,
+          pageLink: baseUrl + href,
           publicationDate: date,
         };
       });

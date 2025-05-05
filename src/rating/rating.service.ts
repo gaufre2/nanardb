@@ -1,45 +1,73 @@
 import {
-  ConflictException,
   Injectable,
   InternalServerErrorException,
-  NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { Prisma, Rating } from '@prisma/client';
-import { PrismaService } from 'src/common';
+import { ImageService, PrismaService } from 'src/common';
+import { UserRatingRawDto } from './dto';
 
 @Injectable()
 export class RatingService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(RatingService.name);
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly image: ImageService,
+  ) {}
 
-  async rating(where: Prisma.RatingWhereUniqueInput): Promise<Rating | null> {
-    return await this.prisma.rating.findUnique({ where });
+  private async prepareRatingConnectOrCreateInput(
+    inputRaw: UserRatingRawDto,
+  ): Promise<Prisma.RatingCreateWithoutReviewInput> {
+    const avatar = await this.image.fetchImage(inputRaw.user.avatarLink);
+    if (!avatar) {
+      const errorMessage = `Failed to fetch avatar image for user "${inputRaw.user.username}"`;
+      this.logger.error(errorMessage);
+      throw new InternalServerErrorException(errorMessage);
+    }
+
+    return {
+      rating: inputRaw.rating,
+      user: {
+        connectOrCreate: {
+          where: {
+            username: inputRaw.user.username,
+          },
+          create: {
+            username: inputRaw.user.username,
+            avatar: avatar,
+          },
+        },
+      },
+    };
   }
 
-  async createRating(data: Prisma.RatingCreateInput): Promise<Rating> {
-    try {
-      return await this.prisma.rating.create({ data });
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          throw new ConflictException(`Rating already exists`);
-        }
-      }
-      throw new InternalServerErrorException(error);
-    }
+  async prepareRatingsConnectOrCreateInput(
+    inputsRaw: UserRatingRawDto[],
+  ): Promise<Prisma.RatingCreateNestedManyWithoutReviewInput> {
+    // Filter out invalid or missing ratings
+    const validRatings = inputsRaw.filter(
+      (input) => input.rating && !isNaN(input.rating),
+    );
+
+    return {
+      create: await Promise.all(
+        validRatings.map((validRating) => {
+          return this.prepareRatingConnectOrCreateInput(validRating);
+        }),
+      ),
+    };
+  }
+
+  async createRatings(data: Prisma.RatingCreateManyInput[]): Promise<Rating[]> {
+    return this.prisma.rating.createManyAndReturn({
+      data,
+      skipDuplicates: true,
+    });
   }
 
   async deleteRating(
     where: Prisma.RatingWhereUniqueInput,
   ): Promise<Rating | null> {
-    try {
-      return await this.prisma.rating.delete({ where });
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException('Rating not found');
-        }
-      }
-      throw new InternalServerErrorException(error);
-    }
+    return await this.prisma.rating.delete({ where });
   }
 }

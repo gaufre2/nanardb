@@ -1,5 +1,6 @@
 import { Args, Int, Mutation, Resolver } from '@nestjs/graphql';
 import { ReviewService } from './review.service';
+import { InternalServerErrorException } from '@nestjs/common';
 
 @Resolver()
 export class ReviewResolver {
@@ -12,13 +13,17 @@ export class ReviewResolver {
     @Args('overwrite', { nullable: true }) overwrite?: boolean,
     @Args('ignoreCache', { nullable: true }) ignoreCache?: boolean,
   ) {
-    return JSON.stringify(
-      await this.reviewService.fetchAndCreateReviews(
-        delay,
-        fetchingNumber,
-        overwrite,
-        ignoreCache,
-      ),
-    );
+    try {
+      return JSON.stringify(
+        await this.reviewService.fetchAndCreateReviews(
+          delay,
+          fetchingNumber,
+          overwrite,
+          ignoreCache,
+        ),
+      );
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }

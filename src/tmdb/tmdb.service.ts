@@ -1,9 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { MovieDetailsResponseDto, SearchMovieResponseDto } from './dto';
@@ -34,7 +30,7 @@ export class TmdbService {
    * @param language - The language for the search results (default is 'fr-FR').
    * @param year - (Optional) The release year of the movie to narrow the search.
    * @returns A promise that resolves to a `SearchMovieResponseDto` containing the search results.
-   * @throws `InternalServerErrorException` if an error occurs while fetching movie data.
+   * @throws `Error` if an error occurs while fetching movie data.
    */
   private async searchMovie(
     query: string,
@@ -60,9 +56,7 @@ export class TmdbService {
       this.logger.verbose('Search answer:', response.data);
       return response.data as SearchMovieResponseDto;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error fetching movie data: ${error}`,
-      );
+      throw new Error(`Error fetching movie data: ${error}`);
     }
   }
 
@@ -116,7 +110,7 @@ export class TmdbService {
    * @param ignoreCache - Optional flag to bypass the cache and fetch fresh data. Defaults to `false`.
    * @param language - The language code for the movie data. Defaults to `'fr-FR'`.
    * @returns A promise that resolves to a `MovieDetailsResponseDto` containing the movie details.
-   * @throws `InternalServerErrorException` if an error occurs while fetching the movie data.
+   * @throws `Error` if an error occurs while fetching the movie data.
    *
    * This method checks the cache for existing data using a generated cache key.
    * If the data is not found in the cache or `ignoreCache` is set to `true`, it fetches the data
@@ -165,9 +159,7 @@ export class TmdbService {
       );
       return response.data as MovieDetailsResponseDto;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error fetching movie data: ${error}`,
-      );
+      throw new Error(`Error fetching movie data: ${error}`);
     }
   }
 }

@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs/promises';
@@ -45,8 +40,7 @@ export class PosterService implements OnModuleInit {
     try {
       await fs.writeFile(filepath, image.buffer);
     } catch (error) {
-      this.logger.error(`Failed to save poster file: ${error}`);
-      throw new InternalServerErrorException('Failed to save poster file');
+      throw new Error(`Failed to save poster file: ${error}`);
     }
     this.logger.debug(`Saved poster at ${filepath}`);
 
@@ -69,8 +63,7 @@ export class PosterService implements OnModuleInit {
       await fs.unlink(filepath);
       this.logger.debug(`Deleted poster at ${filepath}`);
     } catch (error) {
-      this.logger.error(`Failed to delete poster file: ${error}`);
-      throw new InternalServerErrorException('Failed to delete poster file');
+      throw new Error(`Failed to delete poster file: ${error}`);
     }
   }
 }

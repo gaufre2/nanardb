@@ -135,19 +135,35 @@ export class ReviewService {
     let fetchedReview = 0;
     const reviews: Review[] = [];
     for (const reviewLink of reviewsLinks) {
-      // Skip review if already exist and not overwrite
-      const existingReview = await this.findReview({ link: reviewLink });
-      if (existingReview && !overwrite) {
-        this.logger.verbose(
-          `Skipping existing review: "${existingReview.mainTitle}"`,
-        );
-        continue;
+      try {
+        // Skip review if already exist and not overwrite
+        const existingReview = await this.findReview({ link: reviewLink });
+        if (existingReview && !overwrite) {
+          this.logger.verbose(
+            `Skipping existing review: "${existingReview.mainTitle}"`,
+          );
+          continue;
+        }
+      } catch (error) {
+        this.logger.error('Error while checking existing review: ', error);
+        throw error;
       }
 
       if (fetchedReview < fetchingNumber) {
-        // Fetching and create
-        const review = await this.fetchAndCreateReview(reviewLink, ignoreCache);
-        reviews.push(review);
+        try {
+          // Fetching and create review
+          const review = await this.fetchAndCreateReview(
+            reviewLink,
+            ignoreCache,
+          );
+          reviews.push(review);
+        } catch (error) {
+          this.logger.error(
+            'Error while fetching and creating review: ',
+            error,
+          );
+          throw error;
+        }
         fetchedReview++;
         await this.sleep(delay);
       } else {

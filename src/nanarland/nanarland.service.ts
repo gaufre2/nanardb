@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Page } from 'puppeteer';
 import { PuppeteerService } from 'src/puppeteer/puppeteer.service';
 import { ReviewRawDto } from '../review/dto';
@@ -84,7 +80,7 @@ export class NanarlandService {
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to an array of strings representing the review URLs.
-     * @throws InternalServerErrorException if extraction fails.
+     * @throws Error if extraction fails.
      */
     async function getReviewsList(page: Page): Promise<string[]> {
       try {
@@ -101,7 +97,7 @@ export class NanarlandService {
         });
         return links;
       } catch (error) {
-        throw new InternalServerErrorException(
+        throw new Error(
           `Failed to retrieve reviews list (${link}), error: ${error}`,
         );
       }
@@ -238,7 +234,7 @@ export class NanarlandService {
      *
      * @param rating - The text containing the rarity rating in the format "some text / rarity".
      * @returns The corresponding RarityRanting enum value.
-     * @throws InternalServerErrorException if the rating is invalid or the text format is incorrect.
+     * @throws Error if the rating is invalid or the text format is incorrect.
      */
     function getRarityFromText(rating: string): Rarity {
       const REGEX_RATING = /\/\s*(.+)/;
@@ -259,13 +255,11 @@ export class NanarlandService {
 
         const rarity = rarityMap[rarityString];
         if (!rarity) {
-          throw new InternalServerErrorException(
-            `Invalid rarity rating: ${rarityString}`,
-          );
+          throw new Error(`Invalid rarity rating: ${rarityString}`);
         }
         return rarity;
       }
-      throw new InternalServerErrorException(`Invalid rarity text: ${rating}`);
+      throw new Error(`Invalid rarity text: ${rating}`);
     }
 
     /**
@@ -273,13 +267,13 @@ export class NanarlandService {
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to the main title.
-     * @throws InternalServerErrorException if the main title is not found.
+     * @throws Error if the main title is not found.
      */
     async function getMainTitle(page: Page): Promise<string> {
       try {
         return await page.$eval('h1.mainTitle', (el) => el.innerText);
       } catch (error) {
-        throw new InternalServerErrorException(
+        throw new Error(
           `Main title not found (${reviewLink}), error: ${error}`,
         );
       }
@@ -291,7 +285,7 @@ export class NanarlandService {
      * @param page - The Puppeteer Page object.
      * @param selector - The CSS selector to locate the genre element.
      * @returns A promise that resolves to a GenreDto containing the genre details.
-     * @throws InternalServerErrorException if the genre information is not found.
+     * @throws Error if the genre information is not found.
      */
     async function getGenreOrSubgenre(
       page: Page,
@@ -306,17 +300,13 @@ export class NanarlandService {
           el.getAttribute('href'),
         );
         if (!href) {
-          throw new InternalServerErrorException(
-            `Genre link not found (${reviewLink})`,
-          );
+          throw new Error(`Genre link not found (${reviewLink})`);
         }
         const link = baseUrl + href;
         const genre = { title, link };
         return genre;
       } catch (error) {
-        throw new InternalServerErrorException(
-          `Genre not found (${reviewLink}), error: ${error}`,
-        );
+        throw new Error(`Genre not found (${reviewLink}), error: ${error}`);
       }
     }
 
@@ -369,7 +359,7 @@ export class NanarlandService {
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to the author's name.
-     * @throws InternalServerErrorException if the author's name is not found.
+     * @throws Error if the author's name is not found.
      */
     async function getAuthor(page: Page): Promise<UserRawDto> {
       const rawAuthor = await page.evaluate(() => {
@@ -377,7 +367,7 @@ export class NanarlandService {
           'body > main > div.mainInner > div > div:nth-child(1) > div.row > div.col-12.col-md-8.col-lg-8 > div.row.my-3 > div > div > figure';
         const author = document.querySelector(authorSelector);
         if (!author) {
-          throw new InternalServerErrorException('Author element not found');
+          throw new Error('Author element not found');
         }
         return {
           username: author.querySelector('figcaption')?.innerText,
@@ -386,9 +376,7 @@ export class NanarlandService {
       });
 
       if (!rawAuthor.username || !rawAuthor.avatarLink) {
-        throw new InternalServerErrorException(
-          `Author datas invalid (${reviewLink})`,
-        );
+        throw new Error(`Author datas invalid (${reviewLink})`);
       }
       return rawAuthor;
     }
@@ -398,7 +386,7 @@ export class NanarlandService {
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to an array of UserRatingDto objects containing user ratings.
-     * @throws InternalServerErrorException if any required user rating data is missing.
+     * @throws Error if any required user rating data is missing.
      */
     async function getUserRatings(page: Page): Promise<UserRatingRawDto[]> {
       const rawUserRatings = await page.evaluate(() => {
@@ -429,7 +417,7 @@ export class NanarlandService {
           !rawUserRating.user.avatarLink ||
           !rawUserRating.ratingString
         ) {
-          throw new InternalServerErrorException(
+          throw new Error(
             `Invalid user rating data:\n` +
               `  - user.username=${rawUserRating.user.username}\n` +
               `  - user.avatarLink=${rawUserRating.user.avatarLink}\n` +
@@ -529,7 +517,7 @@ export class NanarlandService {
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to an array of `CutVideoRawDto` containing video detail.
-     * @throws InternalServerErrorException if any required video data is invalid.
+     * @throws Error if any required video data is invalid.
      */
     async function getCutVideos(page: Page): Promise<CutVideoRawDto[]> {
       const rawVideos = await page.evaluate(() => {
@@ -572,7 +560,7 @@ export class NanarlandService {
             return !link.href || !link.type;
           })
         ) {
-          throw new InternalServerErrorException(
+          throw new Error(
             `Invalid cut video data (${reviewLink}):\n` +
               `  - id=${rawVideo.id}\n` +
               `  - title=${rawVideo.title}\n` +
@@ -604,7 +592,7 @@ export class NanarlandService {
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to an array of `EscaleVideoRawDto` containing video detail.
-     * @throws InternalServerErrorException if any required video data is invalid.
+     * @throws Error if any required video data is invalid.
      */
     async function getEscaleVideos(page: Page): Promise<EscaleVideoRawDto[]> {
       const rawVideos = await page.evaluate(() => {
@@ -635,7 +623,7 @@ export class NanarlandService {
         const href = rawVideo.href;
 
         if (!id || !title || !dateFrenchString || !href) {
-          throw new InternalServerErrorException(
+          throw new Error(
             `Invalid escale video data (${reviewLink}):\n` +
               `  - spanTitle=${rawVideo.spanTitle}\n` +
               `  - id=${id}\n` +
@@ -667,7 +655,7 @@ export class NanarlandService {
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to an array of `NanaroscopeVideoRawDto` containing video detail.
-     * @throws InternalServerErrorException if any required video data is invalid.
+     * @throws Error if any required video data is invalid.
      */
     async function getNanaroscopeVideos(
       page: Page,
@@ -715,7 +703,7 @@ export class NanarlandService {
 
       const videos = rawVideos.map((rawVideo) => {
         if (!rawVideo.aTitle || !rawVideo.spanTitle) {
-          throw new InternalServerErrorException(
+          throw new Error(
             `Invalid Nanaroscope video data (${reviewLink}):\n` +
               `  - aTitle=${rawVideo.aTitle}\n` +
               `  - spanTitle=${rawVideo.spanTitle}`,
@@ -740,7 +728,7 @@ export class NanarlandService {
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to the URL of the poster image.
-     * @throws InternalServerErrorException if the poster is not found.
+     * @throws Error if the poster is not found.
      */
     async function getPoster(page: Page): Promise<string> {
       try {
@@ -749,9 +737,7 @@ export class NanarlandService {
           (el) => el.src,
         );
       } catch (error) {
-        throw new InternalServerErrorException(
-          `Poster not found (${reviewLink}), error: ${error}`,
-        );
+        throw new Error(`Poster not found (${reviewLink}), error: ${error}`);
       }
     }
 
@@ -760,7 +746,7 @@ export class NanarlandService {
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to the average rating value.
-     * @throws InternalServerErrorException if the average rating is not found.
+     * @throws Error if the average rating is not found.
      */
     async function getAverageRating(page: Page): Promise<number> {
       try {
@@ -770,7 +756,7 @@ export class NanarlandService {
         );
         return parseFloat(averageRating);
       } catch (error) {
-        throw new InternalServerErrorException(
+        throw new Error(
           `Average rating not found (${reviewLink}), error: ${error}`,
         );
       }
@@ -781,7 +767,7 @@ export class NanarlandService {
      *
      * @param page - The Puppeteer Page object.
      * @returns A promise that resolves to a Rarity value.
-     * @throws InternalServerErrorException if the rarity rating is not found.
+     * @throws Error if the rarity rating is not found.
      */
     async function getRarityRating(page: Page): Promise<Rarity> {
       try {
@@ -791,7 +777,7 @@ export class NanarlandService {
         );
         return getRarityFromText(rarityRating);
       } catch (error) {
-        throw new InternalServerErrorException(
+        throw new Error(
           `Rarity rating not found (${reviewLink}), error: ${error}`,
         );
       }

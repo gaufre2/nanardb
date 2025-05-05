@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Prisma, Rating } from '@prisma/client';
 import { ImageService, PrismaService } from 'src/common';
 import { UserRatingRawDto } from './dto';
@@ -20,9 +16,9 @@ export class RatingService {
   ): Promise<Prisma.RatingCreateWithoutReviewInput> {
     const avatar = await this.image.fetchImage(inputRaw.user.avatarLink);
     if (!avatar) {
-      const errorMessage = `Failed to fetch avatar image for user "${inputRaw.user.username}"`;
-      this.logger.error(errorMessage);
-      throw new InternalServerErrorException(errorMessage);
+      throw new Error(
+        `Failed to fetch avatar image for user "${inputRaw.user.username}"`,
+      );
     }
 
     return {

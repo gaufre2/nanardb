@@ -46,10 +46,14 @@ export class ReviewService {
   private async resolveReviewRelations(
     rawData: ReviewRawDto,
   ): Promise<Prisma.ReviewCreateInput> {
-    const author = {
+    let authorAvatar = null;
+    if (rawData.author.avatarLink) {
+      authorAvatar = await this.image.fetchImage(rawData.author.avatarLink);
+    }
+    const author: Prisma.UserCreateWithoutRatingsInput = {
       username: rawData.author.username,
-      avatar: await this.image.fetchImage(rawData.author.avatarLink),
-    } as Prisma.UserCreateWithoutRatingsInput;
+      avatar: authorAvatar,
+    };
     const authorConnectOrCreateInput =
       this.user.prepareUserConnectOrCreateInput(author);
     const ratingsConnectOrCreateInput =
@@ -145,7 +149,7 @@ export class ReviewService {
           continue;
         }
       } catch (error) {
-        this.logger.error('Error while checking existing review: ', error);
+        this.logger.error('Error while checking existing review:', error);
         throw error;
       }
 
@@ -158,10 +162,7 @@ export class ReviewService {
           );
           reviews.push(review);
         } catch (error) {
-          this.logger.error(
-            'Error while fetching and creating review: ',
-            error,
-          );
+          this.logger.error('Error while fetching and creating review:', error);
           throw error;
         }
         fetchedReview++;

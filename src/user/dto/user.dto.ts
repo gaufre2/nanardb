@@ -9,7 +9,6 @@ export class UserRawDto {
   username: string;
 
   @IsUrl()
-  @IsNotEmpty()
   @Field()
-  avatarLink: string;
+  avatarLink: string | null;
 }

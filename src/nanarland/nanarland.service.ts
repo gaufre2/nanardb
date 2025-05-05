@@ -375,7 +375,7 @@ export class NanarlandService {
         } as UserRawDto;
       });
 
-      if (!rawAuthor.username || !rawAuthor.avatarLink) {
+      if (!rawAuthor.username) {
         throw new Error(`Author datas invalid (${reviewLink})`);
       }
       return rawAuthor;
@@ -412,21 +412,16 @@ export class NanarlandService {
       });
 
       const userRatings = rawUserRatings.map((rawUserRating) => {
-        if (
-          !rawUserRating.user.username ||
-          !rawUserRating.user.avatarLink ||
-          !rawUserRating.ratingString
-        ) {
+        if (!rawUserRating.user.username || !rawUserRating.ratingString) {
           throw new Error(
             `Invalid user rating data:\n` +
               `  - user.username=${rawUserRating.user.username}\n` +
-              `  - user.avatarLink=${rawUserRating.user.avatarLink}\n` +
               `  - rating=${rawUserRating.ratingString}`,
           );
         }
         const user = {
           username: rawUserRating.user.username,
-          avatarLink: rawUserRating.user.avatarLink,
+          avatarLink: rawUserRating.user.avatarLink ?? null,
         };
         const rating = parseFloat(rawUserRating.ratingString);
 
@@ -555,10 +550,7 @@ export class NanarlandService {
           !rawVideo.id ||
           !rawVideo.title ||
           !rawVideo.averageRating ||
-          !rawVideo.links.length ||
-          rawVideo.links.map((link) => {
-            return !link.href || !link.type;
-          })
+          !rawVideo.links.length
         ) {
           throw new Error(
             `Invalid cut video data (${reviewLink}):\n` +

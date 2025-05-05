@@ -14,11 +14,9 @@ export class RatingService {
   private async prepareRatingConnectOrCreateInput(
     inputRaw: UserRatingRawDto,
   ): Promise<Prisma.RatingCreateWithoutReviewInput> {
-    const avatar = await this.image.fetchImage(inputRaw.user.avatarLink);
-    if (!avatar) {
-      throw new Error(
-        `Failed to fetch avatar image for user "${inputRaw.user.username}"`,
-      );
+    let avatar = null;
+    if (inputRaw.user.avatarLink) {
+      avatar = await this.image.fetchImage(inputRaw.user.avatarLink);
     }
 
     return {

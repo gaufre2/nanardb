@@ -9,8 +9,8 @@ import { catchError, lastValueFrom, retry } from 'rxjs';
 
 @Injectable()
 export class ImageService {
-  private readonly logger = new Logger(ImageService.name);
   constructor(private readonly httpService: HttpService) {}
+  private readonly logger = new Logger(ImageService.name);
 
   async fetchImage(url: string): Promise<Buffer> {
     const { data } = await lastValueFrom(

@@ -10,9 +10,7 @@ import { Redis } from 'ioredis';
 @Injectable()
 export class RedisService implements OnModuleInit, OnApplicationShutdown {
   constructor(private readonly config: ConfigService) {}
-  private readonly logger = new Logger(RedisService.name, {
-    timestamp: true,
-  });
+  private readonly logger = new Logger(RedisService.name);
   private client: Redis;
 
   private init() {

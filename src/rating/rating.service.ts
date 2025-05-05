@@ -9,11 +9,11 @@ import { UserRatingRawDto } from './dto';
 
 @Injectable()
 export class RatingService {
-  private readonly logger = new Logger(RatingService.name);
   constructor(
     private readonly prisma: PrismaService,
     private readonly image: ImageService,
   ) {}
+  private readonly logger = new Logger(RatingService.name);
 
   private async prepareRatingConnectOrCreateInput(
     inputRaw: UserRatingRawDto,

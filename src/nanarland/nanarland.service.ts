@@ -37,11 +37,10 @@ export class NanarlandService {
     private config: ConfigService,
     private puppeteer: PuppeteerService,
   ) {}
-  private readonly logger = new Logger(NanarlandService.name, {
-    timestamp: true,
-  });
-  private BASE_URL = this.config.getOrThrow<string>('NANARLAND_BASE_URL');
-  private CACHE_TTL_SEC = 3600; // 1 h
+  private readonly logger = new Logger(NanarlandService.name);
+  private readonly BASE_URL =
+    this.config.getOrThrow<string>('NANARLAND_BASE_URL');
+  private readonly CACHE_TTL_SEC = 3600; // 1 h
 
   /**
    * Converts a URL into a cache key by removing protocol/domain, stripping the '.html' extension, and replacing slashes with colons.

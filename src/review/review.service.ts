@@ -12,8 +12,6 @@ import { TmdbService } from 'src/tmdb/tmdb.service';
 
 @Injectable()
 export class ReviewService {
-  private readonly logger = new Logger(ReviewService.name);
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly image: ImageService,
@@ -25,6 +23,7 @@ export class ReviewService {
     private readonly user: UserService,
     private readonly poster: PosterService,
   ) {}
+  private readonly logger = new Logger(ReviewService.name);
 
   async findReview(
     where: Prisma.ReviewWhereUniqueInput,

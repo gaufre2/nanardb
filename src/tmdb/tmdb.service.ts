@@ -19,13 +19,13 @@ export class TmdbService {
   private readonly logger = new Logger(TmdbService.name, {
     timestamp: true,
   });
-  private TMDB_TOKEN = this.config.getOrThrow<string>('TMDB_TOKEN');
-  private BASE_URL = 'https://api.themoviedb.org/3';
-  private HEADERS = {
+  private readonly TMDB_TOKEN = this.config.getOrThrow<string>('TMDB_TOKEN');
+  private readonly BASE_URL = 'https://api.themoviedb.org/3';
+  private readonly HEADERS = {
     Authorization: `Bearer ${this.TMDB_TOKEN}`,
     Accept: 'application/json',
   };
-  private CACHE_TTL_SEC = 900; // 15 min
+  private readonly CACHE_TTL_SEC = 900; // 15 min
 
   /**
    * Searches for a movie using the provided query, language, and optional year.

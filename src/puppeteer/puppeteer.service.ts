@@ -9,9 +9,7 @@ export class PuppeteerService implements OnApplicationShutdown {
     private config: ConfigService,
     private redisService: RedisService,
   ) {}
-  private readonly logger = new Logger(PuppeteerService.name, {
-    timestamp: true,
-  });
+  private readonly logger = new Logger(PuppeteerService.name);
   private browser: puppeteer.Browser;
 
   private async init() {

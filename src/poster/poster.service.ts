@@ -21,9 +21,9 @@ export class PosterService implements OnModuleInit {
     timestamp: true,
   });
 
-  private storagePath = this.config.getOrThrow<string>('STORAGE_PATH');
-  private posterDir = this.config.getOrThrow<string>('POSTER_DIR');
-  storagePosterPath = join(this.storagePath, this.posterDir);
+  private readonly storagePath = this.config.getOrThrow<string>('STORAGE_PATH');
+  private readonly posterDir = this.config.getOrThrow<string>('POSTER_DIR');
+  readonly storagePosterPath = join(this.storagePath, this.posterDir);
 
   private async initStorageDirectory() {
     try {

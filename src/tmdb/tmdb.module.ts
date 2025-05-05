@@ -11,5 +11,6 @@ import { TmdbResolver } from './tmdb.resolver';
     }),
   ],
   providers: [TmdbService, TmdbResolver],
+  exports: [TmdbService, HttpModule],
 })
 export class TmdbModule {}

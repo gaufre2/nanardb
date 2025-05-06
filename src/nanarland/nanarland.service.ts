@@ -742,10 +742,20 @@ export class NanarlandService {
      */
     async function getAverageRating(page: Page): Promise<number> {
       try {
-        const averageRating = await page.$eval(
-          '#notes > div.d-inline-block.bg-primary.text-white.font-weight-bold.py-3.px-4.mb-1 > span',
-          (el) => el.innerText,
-        );
+        const averageRating = await page.evaluate(() => {
+          let value = document.querySelector(
+            '#notes > div.d-inline-block.bg-primary.text-white.font-weight-bold.py-3.px-4.mb-1 > span',
+          )?.textContent;
+
+          // Fall back to author rating if average rating is not available
+          if (!value) {
+            value = document.querySelector('.authorRate')?.textContent;
+          }
+          return value;
+        });
+        if (!averageRating) {
+          throw new Error(`Average rating value not found (${reviewLink})`);
+        }
         return parseFloat(averageRating);
       } catch (error) {
         throw new Error(

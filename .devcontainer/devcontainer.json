@@ -27,7 +27,7 @@
   // "forwardPorts": [],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  // "postCreateCommand": "",
+  "postCreateCommand": "sudo mkdir /var/www && sudo chmod 777 /var/www",
 
   // Configure tool-specific properties.
   "customizations": {

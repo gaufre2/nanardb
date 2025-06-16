@@ -1,0 +1,3 @@
+# Exclude test pages from GitHub code statistics
+# Docs: https://github.com/github-linguist/linguist/blob/main/docs/overrides.md
+src/nanarland/test/** linguist-generated

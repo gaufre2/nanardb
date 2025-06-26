@@ -2,6 +2,7 @@ import { Injectable, Logger, OnApplicationShutdown } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as puppeteer from 'puppeteer';
 import { RedisService } from 'src/common';
+import './puppeteer.extension';
 
 @Injectable()
 export class PuppeteerService implements OnApplicationShutdown {
@@ -74,6 +75,7 @@ export class PuppeteerService implements OnApplicationShutdown {
       this.logger.verbose('Using cached page content, key: ' + cacheKey);
       await page.setContent(cachedContent);
     } else {
+      await page.enableLoadingOptimization();
       await page.goto(url);
       const content = await page.content();
 

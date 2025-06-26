@@ -7,8 +7,9 @@ RUN echo "*** INSTALL Nest CLI ***" \
   && npm install --global @nestjs/cli
 
 RUN echo "*** INSTALL Chromium ****" \
-  && echo "deb http://security.debian.org/debian-security bookworm-security main" > /etc/apt/sources.list \
+  && echo "deb http://security.debian.org/debian-security bookworm-security main" >> /etc/apt/sources.list \
   && export DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
   && apt-get install -y --no-install-recommends chromium \
-  && apt-get autoclean
+  && apt-get autoclean \
+  && rm -rf /var/lib/apt/lists/*

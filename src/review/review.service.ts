@@ -38,6 +38,19 @@ export class ReviewService {
     return await this.prisma.review.create({ data });
   }
 
+  async upsertReview(
+    where: Prisma.ReviewWhereUniqueInput,
+    data: Prisma.ReviewCreateInput,
+  ): Promise<Review> {
+    return await this.prisma.review.upsert({
+      where: {
+        link: where.link,
+      },
+      update: data,
+      create: data,
+    });
+  }
+
   private sleep(delay: number): Promise<void> {
     this.logger.verbose(`Waiting ${delay}ms before next fetching`);
     return new Promise((resolve) => setTimeout(resolve, delay));
@@ -120,8 +133,18 @@ export class ReviewService {
       reviewData.releaseYear,
     );
 
-    // Create review
-    return await this.createReview(reviewCreateInput);
+    // Update or create review
+    try {
+      return await this.upsertReview(
+        {
+          link: reviewCreateInput.link,
+        },
+        reviewCreateInput,
+      );
+    } catch (error) {
+      this.logger.error('Error while creating review:', error);
+      throw error;
+    }
   }
 
   async fetchAndCreateReviews(

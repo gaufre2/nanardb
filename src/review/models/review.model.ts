@@ -1,4 +1,10 @@
-import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
+import {
+  Field,
+  Float,
+  Int,
+  ObjectType,
+  registerEnumType,
+} from '@nestjs/graphql';
 
 export enum ReviewManipulationEnum {
   Inserted,
@@ -14,7 +20,7 @@ export class reviewResponse {
   @Field(() => Int, { nullable: true })
   releaseYear?: number;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Float, { nullable: true })
   averageRating?: number;
 
   @Field(() => Int)

@@ -7,15 +7,25 @@ import { reviewResponse } from './models';
 export class ReviewResolver {
   constructor(private readonly reviewService: ReviewService) {}
 
-  @Mutation(() => [String])
+  @Mutation(() => reviewResponse)
   async fetchAndCreateReviewWithLink(
     @Args('reviewLink') reviewLink: string,
     @Args('ignoreCache', { nullable: true }) ignoreCache?: boolean,
   ) {
     try {
-      return JSON.stringify(
-        await this.reviewService.fetchAndCreateReview(reviewLink, ignoreCache),
+      const review = await this.reviewService.fetchAndCreateReview(
+        reviewLink,
+        ignoreCache,
       );
+
+      return {
+        mainTitle: review.mainTitle,
+        releaseYear: review.releaseYear,
+        averageRating: review.averageRating,
+        id: review.id,
+        link: review.link,
+        manipulation: this.reviewService.determineManipulation(review),
+      };
     } catch (error) {
       throw new InternalServerErrorException(error);
     }

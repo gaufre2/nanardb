@@ -5,7 +5,7 @@
 type reviewResponse {
   mainTitle: String!
   releaseYear: Int
-  averageRating: Int
+  averageRating: Float
   id: Int!
   link: String!
   manipulation: ReviewManipulationEnum!
@@ -24,6 +24,6 @@ type Query {
 }
 
 type Mutation {
-  fetchAndCreateReviewWithLink(reviewLink: String!, ignoreCache: Boolean): [String!]!
+  fetchAndCreateReviewWithLink(reviewLink: String!, ignoreCache: Boolean): reviewResponse!
   fetchAndCreateReviews(delay: Float!, fetchingNumber: Int, overwrite: Boolean, ignoreCache: Boolean): [reviewResponse!]!
 }

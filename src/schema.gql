@@ -10,5 +10,6 @@ type Query {
 }
 
 type Mutation {
+  fetchAndCreateReviewWithLink(reviewLink: String!, ignoreCache: Boolean): [String!]!
   fetchAndCreateReviews(delay: Float!, fetchingNumber: Int!, overwrite: Boolean, ignoreCache: Boolean): [String!]!
 }

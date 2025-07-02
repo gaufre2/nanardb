@@ -7,6 +7,20 @@ export class ReviewResolver {
   constructor(private readonly reviewService: ReviewService) {}
 
   @Mutation(() => [String])
+  async fetchAndCreateReviewWithLink(
+    @Args('reviewLink') reviewLink: string,
+    @Args('ignoreCache', { nullable: true }) ignoreCache?: boolean,
+  ) {
+    try {
+      return JSON.stringify(
+        await this.reviewService.fetchAndCreateReview(reviewLink, ignoreCache),
+      );
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  @Mutation(() => [String])
   async fetchAndCreateReviews(
     @Args('delay') delay: number,
     @Args('fetchingNumber', { type: () => Int }) fetchingNumber: number,

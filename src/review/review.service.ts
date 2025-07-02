@@ -98,7 +98,7 @@ export class ReviewService {
     return review;
   }
 
-  private async fetchAndCreateReview(
+  async fetchAndCreateReview(
     reviewLink: string,
     ignoreCache?: boolean,
   ): Promise<Review> {
@@ -135,7 +135,7 @@ export class ReviewService {
       ignoreCache ?? false,
     );
 
-    // Loop for all reviews
+    // Looping all reviews
     let fetchedReview = 0;
     const reviews: Review[] = [];
     for (const reviewLink of reviewsLinks) {
@@ -154,17 +154,10 @@ export class ReviewService {
       }
 
       if (fetchedReview < fetchingNumber) {
-        try {
-          // Fetching and create review
-          const review = await this.fetchAndCreateReview(
-            reviewLink,
-            ignoreCache,
-          );
-          reviews.push(review);
-        } catch (error) {
-          this.logger.error('Error while fetching and creating review:', error);
-          throw error;
-        }
+        // Fetching and create review
+        const review = await this.fetchAndCreateReview(reviewLink, ignoreCache);
+        reviews.push(review);
+
         fetchedReview++;
         await this.sleep(delay);
       } else {

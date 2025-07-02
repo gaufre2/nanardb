@@ -146,7 +146,7 @@ export class ReviewService {
     }
   }
 
-  async fetchAndCreateReview(
+  async fetchAndUpsertReview(
     reviewLink: string,
     ignoreCache?: boolean,
   ): Promise<Review> {
@@ -194,14 +194,14 @@ export class ReviewService {
     }
   }
 
-  async fetchAndCreateReviews(
+  async fetchAndUpsertReviews(
     delay: number,
     fetchingNumber: number = Infinity,
     update?: boolean,
     ignoreCache?: boolean,
   ): Promise<Review[]> {
     this.logger.log(
-      `Starting review fetch (delay: ${delay}, update: ${String(update)}, ignoreCache: ${String(ignoreCache)})`,
+      `Starting review fetch (fetchingNumber: ${fetchingNumber}, delay: ${delay}, update: ${String(update)}, ignoreCache: ${String(ignoreCache)})`,
     );
 
     // Get reviews hrefs
@@ -219,7 +219,7 @@ export class ReviewService {
     const reviews: Review[] = [];
     for (const reviewLink of filteredReviewsLinks.slice(0, fetchingNumber)) {
       // Fetching and create review
-      const review = await this.fetchAndCreateReview(reviewLink, ignoreCache);
+      const review = await this.fetchAndUpsertReview(reviewLink, ignoreCache);
       reviews.push(review);
 
       await this.sleep(delay);

@@ -8,12 +8,12 @@ export class ReviewResolver {
   constructor(private readonly reviewService: ReviewService) {}
 
   @Mutation(() => reviewResponse)
-  async fetchAndCreateReviewWithLink(
+  async fetchAndUpsertReviewWithLink(
     @Args('reviewLink') reviewLink: string,
     @Args('ignoreCache', { nullable: true }) ignoreCache?: boolean,
   ) {
     try {
-      const review = await this.reviewService.fetchAndCreateReview(
+      const review = await this.reviewService.fetchAndUpsertReview(
         reviewLink,
         ignoreCache,
       );
@@ -32,7 +32,7 @@ export class ReviewResolver {
   }
 
   @Mutation(() => [reviewResponse])
-  async fetchAndCreateReviews(
+  async fetchAndUpsertReviews(
     @Args('delay') delay: number,
     @Args('fetchingNumber', { type: () => Int, nullable: true })
     fetchingNumber?: number,
@@ -40,7 +40,7 @@ export class ReviewResolver {
     @Args('ignoreCache', { nullable: true }) ignoreCache?: boolean,
   ) {
     try {
-      const reviews = await this.reviewService.fetchAndCreateReviews(
+      const reviews = await this.reviewService.fetchAndUpsertReviews(
         delay,
         fetchingNumber,
         update,

@@ -24,6 +24,6 @@ type Query {
 }
 
 type Mutation {
-  fetchAndCreateReviewWithLink(reviewLink: String!, ignoreCache: Boolean): reviewResponse!
-  fetchAndCreateReviews(delay: Float!, fetchingNumber: Int, update: Boolean, ignoreCache: Boolean): [reviewResponse!]!
+  fetchAndUpsertReviewWithLink(reviewLink: String!, ignoreCache: Boolean): reviewResponse!
+  fetchAndUpsertReviews(delay: Float!, fetchingNumber: Int, update: Boolean, ignoreCache: Boolean): [reviewResponse!]!
 }

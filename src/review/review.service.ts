@@ -149,6 +149,7 @@ export class ReviewService {
 
     // Update or create review
     try {
+      this.logger.log(`Upserting review: ${reviewInput.mainTitle}`);
       return await this.upsertReview(
         {
           link: reviewInput.link,

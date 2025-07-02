@@ -134,11 +134,11 @@ export class ReviewService {
     }
 
     // Resolve review relations
-    const reviewCreateInput = await this.resolveReviewRelations(reviewData);
+    const reviewInput = await this.resolveReviewRelations(reviewData);
 
     // Get tmdb id
     try {
-      reviewCreateInput.tmdbId = await this.tmdb.getMovieId(
+      reviewInput.tmdbId = await this.tmdb.getMovieId(
         reviewData.mainTitle,
         reviewData.releaseYear,
       );
@@ -151,9 +151,9 @@ export class ReviewService {
     try {
       return await this.upsertReview(
         {
-          link: reviewCreateInput.link,
+          link: reviewInput.link,
         },
-        reviewCreateInput,
+        reviewInput,
       );
     } catch (error) {
       this.logger.error('Error while creating review:', error);
@@ -198,7 +198,7 @@ export class ReviewService {
         fetchedReview++;
         await this.sleep(delay);
       } else {
-        this.logger.log(`Finished: ${reviews.length} reviews fetched.`);
+        this.logger.log(`Finished: ${reviews.length} reviews processed.`);
         break;
       }
     }

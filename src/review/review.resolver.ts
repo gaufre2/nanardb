@@ -36,14 +36,14 @@ export class ReviewResolver {
     @Args('delay') delay: number,
     @Args('fetchingNumber', { type: () => Int, nullable: true })
     fetchingNumber?: number,
-    @Args('overwrite', { nullable: true }) overwrite?: boolean,
+    @Args('update', { nullable: true }) update?: boolean,
     @Args('ignoreCache', { nullable: true }) ignoreCache?: boolean,
   ) {
     try {
       const reviews = await this.reviewService.fetchAndCreateReviews(
         delay,
         fetchingNumber,
-        overwrite,
+        update,
         ignoreCache,
       );
 

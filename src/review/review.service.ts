@@ -115,6 +115,29 @@ export class ReviewService {
     return review;
   }
 
+  async filterReviewsLinks(
+    reviewsLinks: string[],
+    update?: boolean,
+  ): Promise<string[]> {
+    // Retrieve links of reviews that already exist in the database
+    try {
+      const existingReviews = await this.prisma.review.findMany({
+        select: { link: true },
+      });
+      const existingLinks = new Set(
+        existingReviews.map((review) => review.link),
+      );
+
+      // Filter out already inserted links if not updating
+      return update
+        ? reviewsLinks
+        : reviewsLinks.filter((link) => !existingLinks.has(link));
+    } catch (error) {
+      this.logger.error('Error while checking existing review:', error);
+      throw error;
+    }
+  }
+
   determineManipulation(review: Review): ReviewManipulationEnum {
     if (review.addedAt.getTime() === review.updatedAt.getTime()) {
       return ReviewManipulationEnum.Inserted;
@@ -174,7 +197,7 @@ export class ReviewService {
   async fetchAndCreateReviews(
     delay: number,
     fetchingNumber: number = Infinity,
-    overwrite?: boolean,
+    update?: boolean,
     ignoreCache?: boolean,
   ): Promise<Review[]> {
     // Get reviews hrefs
@@ -182,35 +205,20 @@ export class ReviewService {
       ignoreCache ?? false,
     );
 
-    // Looping all reviews
-    let fetchedReview = 0;
+    // Retrieve links of reviews that already exist in the database
+    const filteredReviewsLinks = await this.filterReviewsLinks(
+      reviewsLinks,
+      update,
+    );
+
+    // Process only filtered review links
     const reviews: Review[] = [];
-    for (const reviewLink of reviewsLinks) {
-      try {
-        // Skip review if already exist and not overwrite
-        const existingReview = await this.findReview({ link: reviewLink });
-        if (existingReview && !overwrite) {
-          this.logger.verbose(
-            `Skipping existing review: "${existingReview.mainTitle}"`,
-          );
-          continue;
-        }
-      } catch (error) {
-        this.logger.error('Error while checking existing review:', error);
-        throw error;
-      }
+    for (const reviewLink of filteredReviewsLinks.slice(0, fetchingNumber)) {
+      // Fetching and create review
+      const review = await this.fetchAndCreateReview(reviewLink, ignoreCache);
+      reviews.push(review);
 
-      if (fetchedReview < fetchingNumber) {
-        // Fetching and create review
-        const review = await this.fetchAndCreateReview(reviewLink, ignoreCache);
-        reviews.push(review);
-
-        fetchedReview++;
-        await this.sleep(delay);
-      } else {
-        this.logger.log(`Finished: ${reviews.length} reviews processed.`);
-        break;
-      }
+      await this.sleep(delay);
     }
     // Return fetched reviews
     return reviews;

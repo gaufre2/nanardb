@@ -1,11 +1,12 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import { catchError, lastValueFrom, retry } from 'rxjs';
 
 @Injectable()
 export class ImageService {
   constructor(private readonly httpService: HttpService) {}
+  private readonly logger = new Logger(ImageService.name);
 
   async fetchImage(url: string): Promise<Buffer> {
     const { data } = await lastValueFrom(
@@ -16,11 +17,11 @@ export class ImageService {
           maxRedirects: 5,
         })
         .pipe(
-          retry(3),
+          retry({ count: 3, delay: 500 }),
           catchError((error: AxiosError) => {
-            throw new Error(
-              `Impossible to fetch image: ${url}, error: ${error.code}`,
-            );
+            const message = `Impossible to fetch image: ${url}, error: ${error.code}`;
+            this.logger.error(message);
+            throw new Error(message);
           }),
         ),
     );

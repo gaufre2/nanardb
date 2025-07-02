@@ -2,6 +2,20 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type reviewResponse {
+  mainTitle: String!
+  releaseYear: Int
+  averageRating: Int
+  id: Int!
+  link: String!
+  manipulation: ReviewManipulationEnum!
+}
+
+enum ReviewManipulationEnum {
+  Inserted
+  Updated
+}
+
 type Query {
   reviewsLinks(ignoreCache: Boolean!): [String!]!
   reviewData(href: String!, ignoreCache: Boolean!): String!
@@ -11,5 +25,5 @@ type Query {
 
 type Mutation {
   fetchAndCreateReviewWithLink(reviewLink: String!, ignoreCache: Boolean): [String!]!
-  fetchAndCreateReviews(delay: Float!, fetchingNumber: Int!, overwrite: Boolean, ignoreCache: Boolean): [String!]!
+  fetchAndCreateReviews(delay: Float!, fetchingNumber: Int, overwrite: Boolean, ignoreCache: Boolean): [reviewResponse!]!
 }

@@ -9,6 +9,7 @@ import { VideosService } from 'src/videos/videos.service';
 import { ReviewRawDto } from './dto';
 import { PosterService } from 'src/poster/poster.service';
 import { TmdbService } from 'src/tmdb/tmdb.service';
+import { ReviewManipulationEnum } from './models';
 
 @Injectable()
 export class ReviewService {
@@ -112,6 +113,14 @@ export class ReviewService {
       posterFilename: savedPosterFilename,
     };
     return review;
+  }
+
+  determineManipulation(review: Review): ReviewManipulationEnum {
+    if (review.addedAt.getTime() === review.updatedAt.getTime()) {
+      return ReviewManipulationEnum.Inserted;
+    } else {
+      return ReviewManipulationEnum.Updated;
+    }
   }
 
   async fetchAndCreateReview(

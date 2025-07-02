@@ -119,10 +119,16 @@ export class ReviewService {
     this.logger.verbose(`Fetching data from "${reviewLink}"`);
 
     // Fetch review data
-    const reviewData = await this.nanarland.getReviewData(
-      reviewLink,
-      ignoreCache ?? false,
-    );
+    let reviewData;
+    try {
+      reviewData = await this.nanarland.getReviewData(
+        reviewLink,
+        ignoreCache ?? false,
+      );
+    } catch (error) {
+      this.logger.error('Error while fetching review:', error);
+      throw error;
+    }
 
     // Resolve review relations
     const reviewCreateInput = await this.resolveReviewRelations(reviewData);

@@ -69,7 +69,7 @@ model Rating {
   user   User   @relation(fields: [userId], references: [id])
 
   @@id([reviewId, userId])
-  @@map("rarity")
+  @@map("rating")
 }
 
 model CutVideo {

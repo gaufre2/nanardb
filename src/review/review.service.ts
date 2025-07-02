@@ -128,10 +128,15 @@ export class ReviewService {
     const reviewCreateInput = await this.resolveReviewRelations(reviewData);
 
     // Get tmdb id
-    reviewCreateInput.tmdbId = await this.tmdb.getMovieId(
-      reviewData.mainTitle,
-      reviewData.releaseYear,
-    );
+    try {
+      reviewCreateInput.tmdbId = await this.tmdb.getMovieId(
+        reviewData.mainTitle,
+        reviewData.releaseYear,
+      );
+    } catch (error) {
+      this.logger.error('Error while getting TMDb movie Id:', error);
+      throw error;
+    }
 
     // Update or create review
     try {

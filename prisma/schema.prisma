@@ -118,7 +118,7 @@ model Review {
   authorId String
 
   ratings       Rating[]
-  averageRating Decimal
+  averageRating Decimal?
   rarity        Rarity?
 
   subgenre          Subgenre @relation(fields: [subgenreId], references: [id])

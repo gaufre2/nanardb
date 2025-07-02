@@ -69,8 +69,11 @@ export class ReviewService {
     };
     const authorConnectOrCreateInput =
       this.user.prepareUserConnectOrCreateInput(author);
-    const ratingsConnectOrCreateInput =
-      await this.rating.prepareRatingsConnectOrCreateInput(rawData.userRatings);
+    const ratingsCreateManyInput =
+      await this.rating.prepareRatingsCreateManyInput(
+        rawData.userRatings,
+        rawData.link,
+      );
     const subgenreConnectOrCreateNestedGenreInput =
       this.genres.prepareSubgenreConnectOrCreateNestedGenreInput(
         rawData.subgenre,
@@ -92,7 +95,7 @@ export class ReviewService {
       link: rawData.link,
       createYear: rawData.createYear,
       author: authorConnectOrCreateInput,
-      ratings: ratingsConnectOrCreateInput,
+      ratings: ratingsCreateManyInput,
       averageRating: rawData.averageRating,
       rarity: rawData.rarityRating,
       subgenre: subgenreConnectOrCreateNestedGenreInput,

@@ -1,67 +1,57 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Prisma, Rating } from '@prisma/client';
-import { ImageService, PrismaService } from 'src/common';
+import { Prisma } from '@prisma/client';
+import { PrismaService } from 'src/common';
 import { UserRatingRawDto } from './dto';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class RatingService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly image: ImageService,
+    private readonly user: UserService,
   ) {}
   private readonly logger = new Logger(RatingService.name);
 
-  private async prepareRatingConnectOrCreateInput(
-    inputRaw: UserRatingRawDto,
-  ): Promise<Prisma.RatingCreateWithoutReviewInput> {
-    let avatar = null;
-    if (inputRaw.user.avatarLink) {
-      avatar = await this.image.fetchImage(inputRaw.user.avatarLink);
-    }
+  async deleteManyRating(
+    where: Prisma.RatingWhereInput,
+  ): Promise<Prisma.BatchPayload | null> {
+    return await this.prisma.rating.deleteMany({ where });
+  }
 
+  private async prepareRatingCreateInput(
+    inputRaw: UserRatingRawDto,
+  ): Promise<Prisma.RatingCreateManyReviewInput> {
     return {
+      userId: await this.user.upsertUserAndReturnId(inputRaw.user),
       rating: inputRaw.rating,
-      user: {
-        connectOrCreate: {
-          where: {
-            username: inputRaw.user.username,
-          },
-          create: {
-            username: inputRaw.user.username,
-            avatar: avatar,
-          },
-        },
-      },
     };
   }
 
-  async prepareRatingsConnectOrCreateInput(
+  async prepareRatingsCreateManyInput(
     inputsRaw: UserRatingRawDto[],
+    reviewLink: string,
   ): Promise<Prisma.RatingCreateNestedManyWithoutReviewInput> {
+    // Clear precedent ratings
+    await this.deleteManyRating({
+      review: {
+        link: reviewLink,
+      },
+    });
+
     // Filter out invalid or missing ratings
     const validRatings = inputsRaw.filter(
       (input) => input.rating && !isNaN(input.rating),
     );
 
     return {
-      create: await Promise.all(
-        validRatings.map((validRating) => {
-          return this.prepareRatingConnectOrCreateInput(validRating);
-        }),
-      ),
+      createMany: {
+        data: await Promise.all(
+          validRatings.map((validRating) => {
+            return this.prepareRatingCreateInput(validRating);
+          }),
+        ),
+        skipDuplicates: true,
+      },
     };
-  }
-
-  async createRatings(data: Prisma.RatingCreateManyInput[]): Promise<Rating[]> {
-    return this.prisma.rating.createManyAndReturn({
-      data,
-      skipDuplicates: true,
-    });
-  }
-
-  async deleteRating(
-    where: Prisma.RatingWhereUniqueInput,
-  ): Promise<Rating | null> {
-    return await this.prisma.rating.delete({ where });
   }
 }

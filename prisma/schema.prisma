@@ -63,7 +63,7 @@ model Rating {
   reviewId Int
   userId   String
 
-  rating Decimal
+  rating Decimal? @db.Decimal(2, 1)
 
   review Review @relation(fields: [reviewId], references: [id])
   user   User   @relation(fields: [userId], references: [id])
@@ -76,7 +76,7 @@ model CutVideo {
   id Int @id
 
   title         String
-  averageRating Decimal
+  averageRating Decimal @db.Decimal(3, 2)
   links         Json
 
   reviews Review[]
@@ -118,7 +118,7 @@ model Review {
   authorId String
 
   ratings       Rating[]
-  averageRating Decimal?
+  averageRating Decimal? @db.Decimal(2, 1)
   rarity        Rarity?
 
   subgenre          Subgenre @relation(fields: [subgenreId], references: [id])

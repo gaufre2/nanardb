@@ -412,18 +412,14 @@ export class NanarlandService {
       });
 
       const userRatings = rawUserRatings.map((rawUserRating) => {
-        if (!rawUserRating.user.username || !rawUserRating.ratingString) {
-          throw new Error(
-            `Invalid user rating data:\n` +
-              `  - user.username=${rawUserRating.user.username}\n` +
-              `  - rating=${rawUserRating.ratingString}`,
-          );
+        if (!rawUserRating.user.username) {
+          throw new Error(`Invalid user name: ${rawUserRating.user.username}`);
         }
         const user = {
           username: rawUserRating.user.username,
           avatarLink: rawUserRating.user.avatarLink ?? null,
         };
-        const rating = parseFloat(rawUserRating.ratingString);
+        const rating = parseFloat(rawUserRating.ratingString ?? '');
 
         return {
           user,

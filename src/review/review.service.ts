@@ -200,6 +200,10 @@ export class ReviewService {
     update?: boolean,
     ignoreCache?: boolean,
   ): Promise<Review[]> {
+    this.logger.log(
+      `Starting review fetch (delay: ${delay}, update: ${String(update)}, ignoreCache: ${String(ignoreCache)})`,
+    );
+
     // Get reviews hrefs
     const reviewsLinks = await this.nanarland.getReviewsLinks(
       ignoreCache ?? false,
@@ -221,6 +225,7 @@ export class ReviewService {
       await this.sleep(delay);
     }
     // Return fetched reviews
+    this.logger.log(`Fetched and created ${reviews.length} reviews.`);
     return reviews;
   }
 }

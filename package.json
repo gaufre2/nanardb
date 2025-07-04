@@ -8,7 +8,7 @@
   "scripts": {
     "db:dev:rm": "docker compose rm dev-db -s -f",
     "db:dev:up": "docker compose up dev-db -d",
-    "db:dev:restart": "pnpm db:dev:rm && pnpm db:dev:up && sleep 5 && pnpm prisma:dev:deploy",
+    "db:dev:restart": "pnpm db:dev:rm && pnpm db:dev:up && sleep 2 && pnpm prisma:dev:deploy",
     "db:dev:nuke": "docker compose stop dev-db && rm -rf ./postgresdata.dev/*",
     "cache:dev:rm": "docker compose rm dev-cache -s -f -v",
     "cache:dev:up": "docker compose up dev-cache -d",

@@ -8,6 +8,16 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator nestgraphql {
+  provider     = "node node_modules/prisma-nestjs-graphql"
+  output       = "../src/@generated/prisma-nestjs-graphql"
+  purgeOutput  = true
+  reExport     = Directories
+  // Workaround for swc, based on this comment: https://github.com/unlight/prisma-nestjs-graphql/issues/175#issuecomment-1616033581
+  // To avoid issues with SWC and circular imports, emit compiled JavaScript and type definitions instead of TypeScript sources
+  emitCompiled = true
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
